@@ -1,0 +1,9 @@
+{
+    "require": {
+        "slim/slim": "3.7",
+        "illuminate/database": "^5.5",
+        "tuupola/slim-jwt-auth": "^2.3",
+        "ramsey/uuid": "^3.7",
+        "slim/twig-view": "^2.3"
+    }
+}
