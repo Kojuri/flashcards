@@ -1,0 +1,42 @@
+{% extends "layout.html" %} {% block contenu %}
+<div class="section">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-8">
+          <div class="title">{{collection.libelle}}         
+               <div class="button is-full is-pulled-right">
+                  <span class="icon">
+                      <i class="fa fa-plus"></i>
+                  </span>
+                  <span><a href = "{{root}}/ajouterCarte/{{collection.id}}">
+                      Ajouter une carte
+                  </a></span>
+              </div>
+          </div>        
+        </div>
+      </div>
+      <hr>
+      <div class="columns is-multiline" >
+        {% for carte in collection.cartes %}
+        <div class="column is-2">
+          <div class="panel">
+            <p class="is-marginless">
+                <a href = "{{root}}/{{carte.url_image}}" target="_blank">
+                  <img src="{{root}}/{{carte.url_image}}">
+                </a>
+            </p>
+            <div class="panel-block">
+              <div class="columns">
+                <div class="column">
+                  <div class="panel-block-item"><i class="fa fa-tag"></i><a href="{{root}}/{{carte.url_image}}" target="_blank">&nbsp;{{carte.description}}</a></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

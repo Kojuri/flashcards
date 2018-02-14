@@ -1,0 +1,12 @@
+nav .fa, nav .fas{
+    margin-right: 5px;
+}
+label > .icon{
+    margin-left: 5px;
+}
+.home{
+    height: 150px;
+}
+.hidden{
+    display: none;
+}
