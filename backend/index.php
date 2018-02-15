@@ -210,6 +210,62 @@ $app->post('/addCollection[/]', function($request, $response, $args) use ($app){
     }
 });
 
+// Route affichant le formulaire de modification d'une collection
+$app->get('/modifierCollection/{id}[/]', function ($request, $response, $args) use($app){
+    $uneCollection = Collection::find($args['id']);
+    if(isset($_SESSION['mail']) and !is_null($uneCollection)){
+        return $this->view->render($response, 'modifierCollection.html', array(
+            'collection' => $uneCollection
+            ));
+    }
+    else{
+        header("Location: ".$app->root."/accueil");
+        exit();
+    }
+});
+
+// Route validant la modification d'une collection
+$app->post('/editCollection/{id}[/]', function($request, $response, $args) use ($app){
+    $uneCollection = Collection::find($args['id']);
+    if(isset($_SESSION['mail']) and !is_null($uneCollection)){
+        $data = $request->getParsedBody();
+        if(!empty($data['libelle']))
+        {
+            $libelle = filter_var($data['libelle'], FILTER_SANITIZE_SPECIAL_CHARS);
+            
+            $uneCollection->libelle = $libelle;
+            $uneCollection->save();
+
+            header("Location: ".$app->root."/collection/".$uneCollection->id);
+            exit();
+        }
+        else{
+            return $this->view->render($response, 'modifierCollection.html', [
+                'error' => 'Veuillez remplir tous les champs !'
+            ]);
+        }
+    }
+    else{
+        header("Location: ".$app->root."/accueil");
+        exit();
+    }
+});
+
+// Route supprimant une collection
+$app->get('/supprimerCollection/{id}[/]', function ($request, $response, $args) use($app){
+    $uneCollection = Collection::find($args['id']);
+    if(isset($_SESSION['mail']) and !is_null($uneCollection)){
+        $uneCollection->cartes()->delete();
+        $uneCollection->delete();
+        header("Location: ".$app->root."/collections");
+        exit();
+    }
+    else{
+        header("Location: ".$app->root."/accueil");
+        exit();
+    }
+});
+
 // Route affichant le formulaire d'ajout d'une carte à une collection
 $app->get('/ajouterCarte/{collection_id}[/]', function ($request, $response, $args) use($app){
     if(isset($_SESSION['mail'])){  

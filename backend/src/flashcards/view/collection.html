@@ -2,8 +2,24 @@
 <div class="section">
     <div class="container">
       <div class="columns">
-        <div class="column is-8">
-          <div class="title">{{collection.libelle}}         
+        <div class="column is-12">
+          <div class="title">{{collection.libelle}}  
+              <div class="button is-full is-pulled-right">
+                  <span class="icon">
+                      <i class="fa fa-trash-alt"></i>
+                  </span>
+                  <span><a href = "#" onclick="ConfirmSuppression(); return false;">
+                      Supprimer la collection
+                  </a></span>
+              </div> 
+            <div class="button is-full is-pulled-right">
+                  <span class="icon">
+                      <i class="fa fa-edit"></i>
+                  </span>
+                  <span><a href = "{{root}}/modifierCollection/{{collection.id}}">
+                      Modifier la collection
+                  </a></span>
+              </div>       
                <div class="button is-full is-pulled-right">
                   <span class="icon">
                       <i class="fa fa-plus"></i>
@@ -12,6 +28,7 @@
                       Ajouter une carte
                   </a></span>
               </div>
+             
           </div>        
         </div>
       </div>
@@ -38,5 +55,11 @@
       </div>
     </div>
   </div>
-
+<script>
+    function ConfirmSuppression() {
+      if (confirm("Voulez-vous vraiment supprimer cette collection ?")) { // Clic sur OK
+        document.location.href ="{{root}}/supprimerCollection/{{collection.id}}";
+      }
+    } 
+</script>
 {% endblock %}
