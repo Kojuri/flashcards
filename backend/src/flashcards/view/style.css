@@ -10,3 +10,10 @@ label > .icon{
 .hidden{
     display: none;
 }
+.right-desc{
+    margin-right: 5px;
+    margin-left: auto;
+}
+.effacer-carte{
+    vertical-align: middle;
+}

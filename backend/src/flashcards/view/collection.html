@@ -45,7 +45,9 @@
             <div class="panel-block">
               <div class="columns">
                 <div class="column">
-                  <div class="panel-block-item"><i class="fa fa-tag"></i><a href="{{root}}/{{carte.url_image}}" target="_blank">&nbsp;{{carte.description}}</a></div>
+                  <div class="panel-block-item">
+                    <i class="fa fa-tag"></i><a href="{{root}}/{{carte.url_image}}" target="_blank">&nbsp;{{carte.description}}</a>
+                  </div>            
                 </div>
               </div>
             </div>
@@ -57,7 +59,7 @@
   </div>
 <script>
     function ConfirmSuppression() {
-      if (confirm("Voulez-vous vraiment supprimer cette collection ?")) { // Clic sur OK
+      if (confirm("Voulez-vous vraiment supprimer cette collection ainsi que toutes ses cartes ?")) { // Clic sur OK
         document.location.href ="{{root}}/supprimerCollection/{{collection.id}}";
       }
     } 

@@ -1,0 +1,81 @@
+{% extends "layout.html" %} {% block contenu %}
+
+<div class="section columns">
+  <div class="container column is-6">
+      <div class="title">Modifier la carte : {{carte.description}}
+        </div>
+    <div class="columns">     
+        <div class="column is-12">
+          <form class="fc-modifierCarte" action="{{root}}/editCarte/{{carte.id}}" method="post"  enctype="multipart/form-data">
+              {% if(error) %}
+              <div class="has-text-danger is-danger">
+                 {{error}}
+                </div>
+                {% endif %}
+            <div class="field">
+              <label class="label">Description</label>
+              <div class="control has-icons-left has-icons-right">
+                <input class="input is-success" type="text" placeholder="Lapin" name="description" value="{{carte.description}}">
+                <span class="icon is-small is-left">
+                  <i class="fa fa-tag"></i>
+                </span>
+                <span class="icon is-small is-right">
+                  <i class="fa fa-check"></i>
+                </span>
+              </div>
+            </div>
+            <div class="field">
+                <label class="label">Image
+                  <span class="icon is-small is-right">
+                    <i class="fa fa-question-circle" title="Si vous souhaitez changer l'image de la carte, veuillez uploader une nouvelle image, sinon laissez le champ vide."></i>
+                  </span>
+                </label>
+                <div class="control has-icons-left has-icons-right">
+                  <input class="input is-success" type="file" placeholder="http://mon-image.fr" name="url_image" id="url_image">
+                  <span class="icon is-small is-left">
+                    <i class="fa fa-image"></i>
+                  </span>
+                  <span class="icon is-small is-right">
+                    <i class="fa fa-check"></i>
+                  </span>
+                </div>
+              </div>
+            <div class="field is-grouped">
+              <div class="control">
+                  <button class="button is-link">Valider</button>
+              </div>
+              <div class="control">
+                  <a class="button is-text" href = "{{root}}/modifierCollection/{{carte.collection.id}}">Annuler</a>
+              </div>
+            </div>
+          </form>
+      </div>
+    </div>  
+  </div>
+  <div class="column is-6">
+    <img id="blah" src="{{root}}/{{carte.url_image}}" />
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script>
+  function readURL(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        $('#blah').attr('src', e.target.result);
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  $("#url_image").change(function() {
+    readURL(this);
+  });
+</script>
+
+
+
+
+{% endblock %}

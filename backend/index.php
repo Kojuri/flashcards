@@ -360,5 +360,107 @@ $app->post('/addCarte/{collection_id}[/]', function($request, $response, $args) 
     }
 });
 
+// Route affichant le formulaire de modification d'une carte
+$app->get('/modifierCarte/{id}[/]', function ($request, $response, $args) use($app){
+    $uneCarte = Carte::find($args['id']);
+    if(isset($_SESSION['mail']) and !is_null($uneCarte)){
+        return $this->view->render($response, 'modifierCarte.html', array(
+            'carte' => $uneCarte
+            ));
+    }
+    else{
+        header("Location: ".$app->root."/accueil");
+        exit();
+    }
+});
+
+// Route validant la modification d'une carte
+$app->post('/editCarte/{id}[/]', function($request, $response, $args) use ($app){
+    $uneCarte = Carte::find($args['id']);
+    if(isset($_SESSION['mail']) and !is_null($uneCarte)){
+        $data = $request->getParsedBody();
+        if(!empty($data['description']))
+        {
+            $description = filter_var($data['description'], FILTER_SANITIZE_SPECIAL_CHARS);
+            $uneCarte->description = $description;
+            if($_FILES["url_image"]["size"] > 0)
+            {
+                $allowed = array("jpg" => "image/jpg", "jpeg" => "image/jpeg", "gif" => "image/gif", "png" => "image/png");
+                $filename = $_FILES["url_image"]["name"];
+                $filetype = $_FILES["url_image"]["type"];
+                $filesize = $_FILES["url_image"]["size"];
+    
+                // Verify file extension
+                $ext = pathinfo($filename, PATHINFO_EXTENSION);
+                if(!array_key_exists($ext, $allowed)) {
+                    return $this->view->render($response, 'modifierCarte.html', [
+                        'error' => "Erreur, le type de votre fichier ne correspond pas à une image !",
+                        'carte' => $uneCarte
+                    ]);
+                }
+    
+                // Verify file size - 5MB maximum
+                $maxsize = 5 * 1024 * 1024;
+                if($filesize > $maxsize) {
+                    return $this->view->render($response, 'modifierCarte.html', [
+                        'error' => "Erreur, la taille de votre image est trop importante.",
+                        'carte' => $uneCarte
+                    ]);
+                }
+    
+                $uuid4 = Uuid::uuid4();
+                $path = $uuid4->toString();
+    
+                // Verify MYME type of the file
+                if(in_array($filetype, $allowed)){
+                    // Check whether file exists before uploading it
+                    if(file_exists($app->root."/upload/".$path)){
+                        return $this->view->render($response, 'modifierCarte.html', [
+                            'error' => "Erreur lors de l'upload de votre image, veuillez réessayer ultérieurement.",
+                            'carte' => $uneCarte
+                        ]);
+                    } else{                 
+                        move_uploaded_file($_FILES["url_image"]["tmp_name"], "upload/".$path.".".$ext);
+                        $uneCarte->url_image = "upload/".$path.".".$ext;
+                    } 
+                } else{
+                    return $this->view->render($response, 'modifierCarte.html', [
+                        'error' => "Erreur lors de l'upload de votre image, veuillez réessayer ultérieurement.",
+                        'carte' => $uneCarte
+                    ]);
+                }            
+            }
+            $uneCarte->save(); 
+            header("Location: ".$app->root."/modifierCollection/".$uneCarte->collection()->first()->id);
+            exit();
+        }     
+        else{
+            return $this->view->render($response, 'modifierCarte.html', [
+                'error' => 'La description de la carte est obligatoire !',
+                'carte' => $uneCarte
+            ]);
+        }
+    }
+    else{
+        header("Location: ".$app->root."/accueil");
+        exit();
+    }
+});
+
+// Route supprimant une carte
+$app->get('/supprimerCarte/{id}[/]', function ($request, $response, $args) use($app){
+    $uneCarte = Carte::find($args['id']);
+    if(isset($_SESSION['mail']) and !is_null($uneCarte)){
+        $collection_id = $uneCarte->collection_id;
+        $uneCarte->delete();
+        header("Location: ".$app->root."/modifierCollection/".$collection_id);
+        exit();
+    }
+    else{
+        header("Location: ".$app->root."/accueil");
+        exit();
+    }
+});
+
 // Lance l'application
 $app->run();
