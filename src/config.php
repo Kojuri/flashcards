@@ -5,12 +5,12 @@ return [
   'displayErrorDetails' => true,
   'db' => [
     'driver' => 'mysql',
-    'host' => 'localhost',
+    'host' => 'flashcards',
     'port' => '',
     'database' => 'flashcards',
     'username' => 'root',
-    'password' => '',
+    'password' => 'root',
     'charset' => 'utf8',
-    'collation' => 'utf8_unicode_ci',
+    'collation' => 'utf8_general_ci',
   ]
 ];

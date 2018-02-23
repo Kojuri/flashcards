@@ -1,0 +1,19 @@
+nav .fa, nav .fas{
+    margin-right: 5px;
+}
+label > .icon{
+    margin-left: 5px;
+}
+.home{
+    height: 150px;
+}
+.hidden{
+    display: none;
+}
+.right-desc{
+    margin-right: 5px;
+    margin-left: auto;
+}
+.effacer-carte{
+    vertical-align: middle;
+}

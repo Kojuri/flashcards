@@ -1,0 +1,52 @@
+{% extends "layout.html" %} {% block contenu %}
+
+<div class="section">
+  <div class="container">
+      <div class="title">Ajouter une carte à la collection : {{collection.libelle}}
+        </div>
+    <div class="columns">     
+        <div class="column is-8">
+          <form class="fc-ajouterCarte" action="{{ path_for('add_card', {collection_id: collection.id}) }}" method="post"  enctype="multipart/form-data">
+              {% if(error) %}
+              <div class="has-text-danger is-danger">
+                 {{error}}
+                </div>
+                {% endif %}
+            <div class="field">
+              <label class="label">Description</label>
+              <div class="control has-icons-left has-icons-right">
+                <input class="input is-success" type="text" placeholder="Lapin" name="description">
+                <span class="icon is-small is-left">
+                  <i class="fa fa-tag"></i>
+                </span>
+                <span class="icon is-small is-right">
+                  <i class="fa fa-check"></i>
+                </span>
+              </div>
+            </div>
+            <div class="field">
+                <label class="label">Image</label>
+                <div class="control has-icons-left has-icons-right">
+                  <input class="input is-success" type="file" placeholder="http://mon-image.fr" name="url_image" id="url_image">
+                  <span class="icon is-small is-left">
+                    <i class="fa fa-image"></i>
+                  </span>
+                  <span class="icon is-small is-right">
+                    <i class="fa fa-check"></i>
+                  </span>
+                </div>
+              </div>
+            <div class="field is-grouped">
+              <div class="control">
+                  <button class="button is-link">Valider</button>
+              </div>
+              <div class="control">
+                  <a class="button is-text" href = "{{ path_for('get_collection', {id: collection.id}) }}">Annuler</a>
+              </div>
+            </div>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

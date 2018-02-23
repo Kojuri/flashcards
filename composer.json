@@ -5,5 +5,16 @@
         "tuupola/slim-jwt-auth": "^2.3",
         "ramsey/uuid": "^3.7",
         "slim/twig-view": "^2.3"
+    },
+    "authors": [
+        {
+            "name": "Mohamed ALHASNE",
+            "email": "alhasne.mohamed@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\": "src"
+        }
     }
 }

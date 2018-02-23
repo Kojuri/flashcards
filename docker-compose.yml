@@ -1,0 +1,132 @@
+#
+# docker-compose file pour le déploiement initial de l'application geoquizz2
+# Documentation complète : https://bitbucket.org/canals5/docker-things
+#
+# ajouter les vhosts des services web dans le fichier /etc/vhosts
+# de la machine hôte :
+# exemple pour le service api.public :
+# 127.0.0.1   api.lbs.local
+# pour accéder à ce service : https://api.lbs.local:10443
+#                      ou   :  http://api.lbs.local:10080
+# accès au service adminer : http://localhost:8080
+# accès au service mysql depuis le container api.public : utiliser le hostname "db"
+
+version: "2"
+networks:
+     flashcards_network:
+         driver: bridge
+
+services:
+  api.public:
+    image: canals/php
+    container_name: api.flashcards.local
+    environment:
+        - VHOST_HOSTNAME=api.flashcards.local
+        - VHOST_DOCROOT=/var/www/api
+#       - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
+#       - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
+    ports:
+        - "10080:80"
+        - "10443:443"
+    volumes :
+        - ./api:/var/www/api
+        - ./src:/var/www/src
+        - ./web:/var/www/web
+        - ./vendor:/var/www/vendor
+    networks:
+        - flashcards_network
+    links :
+        - mysql:flashcards
+
+  admin.backoffice:
+    image: canals/php
+    container_name: bo.flashcards.local
+    environment:
+        - VHOST_HOSTNAME=admin.flashcards.local
+        - VHOST_DOCROOT=/var/www/backend
+#       - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
+#       - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
+    ports:
+        - "10081:80"
+        - "10444:443"
+    volumes :
+        - ./backend:/var/www/backend
+        - ./src:/var/www/src
+        - ./web:/var/www/web
+        - ./vendor:/var/www/vendor
+    networks:
+        - flashcards_network
+    links :
+        - mysql:flashcards
+
+
+####################
+##### Web assets & images
+####################
+
+  web.public:
+    image: canals/php
+    container_name: web.flashcards.local
+    environment:
+        - VHOST_HOSTNAME=web.flashcards.local
+        - VHOST_DOCROOT=/var/www/web
+#       - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
+#       - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
+    ports:
+        - "10085:80"
+        - "10446:443"
+    volumes :
+        - ./web:/var/www/web
+    networks:
+        - flashcards_network
+
+######################
+############ Migration Service
+######################
+#  db.migrate:
+#      image: canals/php
+#      container_name: migrate.flashcards.local
+#      environment:
+#          - VHOST_HOSTNAME=migrate.flashcards.local
+#          - VHOST_DOCROOT=/var/www/data
+#          - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
+#          - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
+#      ports:
+#          - "10083:80"
+#          - "10444:443"
+#      volumes :
+#          - ./data:/var/www/data
+#          - ./src:/var/www/src
+#          - ./vendor:/var/www/vendor
+#      networks:
+#          - flashcards_network
+#     links :
+#         - mysql:flashcards
+
+#############################
+# mysql + adminer / can be replaced by mariadb
+#############################
+  mysql:
+    image: mariadb:latest
+    container_name: db.flashcards.local
+    environment:
+          - MYSQL_ROOT_PASSWORD=root
+          - MYSQL_USER=root
+          - MYSQL_PASSWORD=root
+          - MYSQL_DATABASE=flashcards
+    ports:
+          - "3603:3306"
+    networks:
+          - flashcards_network
+    volumes :
+          - ./data:/var/data
+
+  adminer:
+     image: adminer
+     container_name: dbadmin.flashcards.local
+     ports:
+          - "8082:8080"
+     networks:
+          - flashcards_network
+     links:
+          - mysql:flashcards

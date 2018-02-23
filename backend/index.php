@@ -1,15 +1,26 @@
-<?php  
-require '../vendor/autoload.php';  
-require '../src/models/Carte.php'; 
+<?php
+
+require __DIR__.'/../vendor/autoload.php';
+
+use App\models\Carte;
+use App\models\Collection;
+use App\models\Professeur;
+use App\services\auth\FlashcardsAuthentification;
+use App\handlers\Handler;
+
+/*
+require '../src/models/Carte.php';
 require '../src/models/Collection.php';
 require 'src/flashcards/auth/FlashcardsAuthentification.php';
 require '../src/handlers/exceptions.php';
+*/
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 
 session_start();
-$config = include('../src/config.php');
+
+$config = include(__DIR__.'/../src/config.php');
 $app = new \Slim\App(['settings'=> $config]);
 $container = $app->getContainer();
 
@@ -23,8 +34,15 @@ $capsule->getContainer()->singleton(
 );
 
 // Register component on container
+
+//Image files upload directory base url
+
+$container['public_url'] = 'http://web.flashcards.local:10085';
+$container['public_path'] = __DIR__.'/../web';
+
+
 $container['view'] = function ($container) {
-    $view = new \Slim\Views\Twig('src/flashcards/view', [
+    $view = new \Slim\Views\Twig(__DIR__.'/../src/views', [
         'cache' => false
     ]);
 
@@ -33,6 +51,7 @@ $container['view'] = function ($container) {
     $view->addExtension(new Slim\Views\TwigExtension($container['router'], $basePath));
     $root = dirname($_SERVER['SCRIPT_NAME'],1);
     $view->getEnvironment()->addGlobal("root", $root);
+    $view->getEnvironment()->addGlobal("public_url", $container['public_url']);
     
     // Variables globales twig avec le mail et le pseudo de l'utilisateur connecté
     if(isset($_SESSION['mail'])){
@@ -44,6 +63,21 @@ $container['view'] = function ($container) {
 
     return $view;
 };
+
+
+//Default route
+
+$app->get('/', function ($request, $response, $args) use ($app) {
+    if(isset($_SESSION['mail'])){
+        return $this->view->render($response, 'accueil.html');
+        header("Location: ".$this->router->pathFor('accueil'));
+        exit();
+    }
+    
+    header("Location: ".$this->router->pathFor('connexion'));
+    exit();
+
+})->setName('get_default');
 
 // Document root de l'application utilisé pour les redirections
 $app->root = dirname($_SERVER['SCRIPT_NAME'],1);
@@ -69,7 +103,7 @@ $app->post('/register[/]', function($request, $response, $args) use ($app){
             $co = $auth->createUtilisateur($mdp, $mail, $nom, $prenom);
             if(empty($co))
             {                
-               header("Location: ".$app->root."/connexion");
+               header("Location: ".$this->router->pathFor('connexion'));
                exit();
             }
             else
@@ -96,7 +130,7 @@ $app->post('/register[/]', function($request, $response, $args) use ($app){
 // Route affichant le formulaire de connexion
 $app->get('/connexion[/]', function ($request, $response, $args) {
     return $this->view->render($response, 'connexion.html', $args);
-});
+})->setName('connexion');
 
 // Route validant la connexion
 $app->post('/login[/]', function($request, $response, $args) use ($app){
@@ -109,7 +143,7 @@ $app->post('/login[/]', function($request, $response, $args) use ($app){
         $co = $auth->login($mail, $mdp);
         if(empty($co))
         {
-            header("Location: ".$app->root."/accueil");
+            header("Location: ".$this->router->pathFor('accueil'));
             exit();
         }
         else
@@ -124,25 +158,25 @@ $app->post('/login[/]', function($request, $response, $args) use ($app){
             'error' => 'Veuillez remplir tous les champs !'
         ]);
     }
-});
+})->setName('login');
 
 // Route affichant la page d'accueil de l'application backend
-$app->get('/[accueil]', function ($request, $response, $args) {
+$app->get('/accueil[/]', function ($request, $response, $args) {
     if(isset($_SESSION['mail'])){
         return $this->view->render($response, 'accueil.html');
     }
     else{
         return $this->view->render($response, 'connexion.html');
     }
-});
+})->setName('accueil');
 
 // Route permettant de se déconnecter
 $app->get('/deconnexion[/]', function ($request, $response, $args) use ($app){
     $auth = new FlashcardsAuthentification();
     $auth->deconnexion();
-    header("Location: ".$app->root."/accueil");
+    header("Location: ".$this->router->pathFor('accueil'));
     exit();
-});
+})->setName('deconnexion');
 
 // Route affichant la liste des séries
 $app->get('/collections[/]', function ($request, $response, $args) use ($app){
@@ -153,10 +187,10 @@ $app->get('/collections[/]', function ($request, $response, $args) use ($app){
             ));
     }
     else{
-        header("Location: ".$app->root."/accueil");
+        header("Location: ".$this->router->pathFor('accueil'));
         exit();
     }
-});
+})->setName('get_collections');
 
 // Route affichant une collection et ses cartes
 $app->get('/collection/{id}[/]', function ($request, $response, $args) use ($app){
@@ -167,10 +201,10 @@ $app->get('/collection/{id}[/]', function ($request, $response, $args) use ($app
             ));
     }
     else{
-        header("Location: ".$app->root."/accueil");
+        header("Location: ".$this->router->pathFor('accueil'));
         exit();
     }
-});
+})->setName('get_collection');
 
 // Route affichant le formulaire d'ajout d'une collection
 $app->get('/ajouterCollection[/]', function ($request, $response, $args) use($app){
@@ -178,10 +212,10 @@ $app->get('/ajouterCollection[/]', function ($request, $response, $args) use($ap
         return $this->view->render($response, 'ajouterCollection.html');
     }
     else{
-        header("Location: ".$app->root."/accueil");
+        header("Location: ".$this->router->pathFor('accueil'));
         exit();
     }
-});
+})->setName('add_collection_page');
 
 // Route validant l'ajout d'une collection
 $app->post('/addCollection[/]', function($request, $response, $args) use ($app){
@@ -195,7 +229,7 @@ $app->post('/addCollection[/]', function($request, $response, $args) use ($app){
             $collection->libelle = $libelle;
             $collection->save();
 
-            header("Location: ".$app->root."/collection/".$collection->id);
+            header("Location: ".$this->router->pathFor('get_collection', array('id' => $collection->id)));
             exit();
         }
         else{
@@ -205,10 +239,10 @@ $app->post('/addCollection[/]', function($request, $response, $args) use ($app){
         }
     }
     else{
-        header("Location: ".$app->root."/accueil");
+        header("Location: ".$this->router->pathFor('accueil'));
         exit();
     }
-});
+})->setName('add_collection');
 
 // Route affichant le formulaire de modification d'une collection
 $app->get('/modifierCollection/{id}[/]', function ($request, $response, $args) use($app){
@@ -219,10 +253,10 @@ $app->get('/modifierCollection/{id}[/]', function ($request, $response, $args) u
             ));
     }
     else{
-        header("Location: ".$app->root."/accueil");
+        header("Location: ".$this->router->pathFor('accueil'));
         exit();
     }
-});
+})->setName('edit_collection_page');
 
 // Route validant la modification d'une collection
 $app->post('/editCollection/{id}[/]', function($request, $response, $args) use ($app){
@@ -236,7 +270,7 @@ $app->post('/editCollection/{id}[/]', function($request, $response, $args) use (
             $uneCollection->libelle = $libelle;
             $uneCollection->save();
 
-            header("Location: ".$app->root."/collection/".$uneCollection->id);
+            header("Location: ".$this->router->pathFor('get_collection', array('id' => $uneCollection->id)));
             exit();
         }
         else{
@@ -246,10 +280,10 @@ $app->post('/editCollection/{id}[/]', function($request, $response, $args) use (
         }
     }
     else{
-        header("Location: ".$app->root."/accueil");
+        header("Location: ".$this->router->pathFor('accueil'));
         exit();
     }
-});
+})->setName('edit_collection');
 
 // Route supprimant une collection
 $app->get('/supprimerCollection/{id}[/]', function ($request, $response, $args) use($app){
@@ -257,14 +291,14 @@ $app->get('/supprimerCollection/{id}[/]', function ($request, $response, $args) 
     if(isset($_SESSION['mail']) and !is_null($uneCollection)){
         $uneCollection->cartes()->delete();
         $uneCollection->delete();
-        header("Location: ".$app->root."/collections");
+        header("Location: ".$this->router->pathFor('get_collections'));
         exit();
     }
     else{
-        header("Location: ".$app->root."/accueil");
+        header("Location: ".$this->router->pathFor('accueil'));
         exit();
     }
-});
+})->setName('remove_collection');
 
 // Route affichant le formulaire d'ajout d'une carte à une collection
 $app->get('/ajouterCarte/{collection_id}[/]', function ($request, $response, $args) use($app){
@@ -275,10 +309,10 @@ $app->get('/ajouterCarte/{collection_id}[/]', function ($request, $response, $ar
             ));
     }
     else{
-        header("Location: ".$app->root."/accueil");
+        header("Location: ".$this->router->pathFor('accueil'));
         exit();
     }
-});
+})->setName('add_card_page');
 
 // Route validant l'ajout d'une carte à une collection
 $app->post('/addCarte/{collection_id}[/]', function($request, $response, $args) use ($app){
@@ -320,14 +354,14 @@ $app->post('/addCarte/{collection_id}[/]', function($request, $response, $args) 
             // Verify MYME type of the file
             if(in_array($filetype, $allowed)){
                 // Check whether file exists before uploading it
-                if(file_exists($app->root."/upload/".$path)){
-                    $collection = Collection::find($collection_id); 
+                if(file_exists($this->public_path."/uploads/".$path)){
+                    $collection = Collection::find($collection_id);
                     return $this->view->render($response, 'ajouterCarte.html', [
                         'error' => "Erreur lors de l'upload de votre image, veuillez réessayer ultérieurement.",
                         'collection' => $collection
                     ]);
                 } else{                 
-                    move_uploaded_file($_FILES["url_image"]["tmp_name"], "upload/".$path.".".$ext);
+                    move_uploaded_file($_FILES["url_image"]["tmp_name"], $this->public_path."/uploads/".$path.".".$ext);
                 } 
             } else{
                 $collection = Collection::find($collection_id); 
@@ -339,11 +373,11 @@ $app->post('/addCarte/{collection_id}[/]', function($request, $response, $args) 
 
             $carte = new Carte();
             $carte->description = $description;
-            $carte->url_image = "upload/".$path.".".$ext;
+            $carte->url_image = "uploads/".$path.".".$ext;
             $carte->collection_id = $collection_id;
             $carte->save();
 
-            header("Location: ".$app->root."/collection/".$collection_id);
+            header("Location: ".$this->router->pathFor('get_collection', array('id' => $collection_id)));
             exit();
         }
         else{
@@ -355,10 +389,10 @@ $app->post('/addCarte/{collection_id}[/]', function($request, $response, $args) 
         }
     }
     else{
-        header("Location: ".$app->root."/accueil");
+        header("Location: ".$this->router->pathFor('accueil'));
         exit();
     }
-});
+})->setName('add_card');
 
 // Route affichant le formulaire de modification d'une carte
 $app->get('/modifierCarte/{id}[/]', function ($request, $response, $args) use($app){
@@ -369,10 +403,10 @@ $app->get('/modifierCarte/{id}[/]', function ($request, $response, $args) use($a
             ));
     }
     else{
-        header("Location: ".$app->root."/accueil");
+        header("Location: ".$this->router->pathFor('accueil'));
         exit();
     }
-});
+})->setName('edit_card_page');
 
 // Route validant la modification d'une carte
 $app->post('/editCarte/{id}[/]', function($request, $response, $args) use ($app){
@@ -414,14 +448,14 @@ $app->post('/editCarte/{id}[/]', function($request, $response, $args) use ($app)
                 // Verify MYME type of the file
                 if(in_array($filetype, $allowed)){
                     // Check whether file exists before uploading it
-                    if(file_exists($app->root."/upload/".$path)){
+                    if(file_exists($this->public_path."/uploads/".$path)){
                         return $this->view->render($response, 'modifierCarte.html', [
                             'error' => "Erreur lors de l'upload de votre image, veuillez réessayer ultérieurement.",
                             'carte' => $uneCarte
                         ]);
                     } else{                 
-                        move_uploaded_file($_FILES["url_image"]["tmp_name"], "upload/".$path.".".$ext);
-                        $uneCarte->url_image = "upload/".$path.".".$ext;
+                        move_uploaded_file($_FILES["url_image"]["tmp_name"], $this->public_path."/uploads/".$path.".".$ext);
+                        $uneCarte->url_image = "uploads/".$path.".".$ext;
                     } 
                 } else{
                     return $this->view->render($response, 'modifierCarte.html', [
@@ -430,8 +464,10 @@ $app->post('/editCarte/{id}[/]', function($request, $response, $args) use ($app)
                     ]);
                 }            
             }
-            $uneCarte->save(); 
-            header("Location: ".$app->root."/modifierCollection/".$uneCarte->collection()->first()->id);
+            $uneCarte->save();
+
+            header("Location: ".$this->router->pathFor('edit_collection_page', array('id' => $uneCarte->collection()->first()->id)));
+
             exit();
         }     
         else{
@@ -442,10 +478,10 @@ $app->post('/editCarte/{id}[/]', function($request, $response, $args) use ($app)
         }
     }
     else{
-        header("Location: ".$app->root."/accueil");
+        header("Location: ".$this->router->pathFor('accueil'));
         exit();
     }
-});
+})->setName('edit_card');
 
 // Route supprimant une carte
 $app->get('/supprimerCarte/{id}[/]', function ($request, $response, $args) use($app){
@@ -453,14 +489,14 @@ $app->get('/supprimerCarte/{id}[/]', function ($request, $response, $args) use($
     if(isset($_SESSION['mail']) and !is_null($uneCarte)){
         $collection_id = $uneCarte->collection_id;
         $uneCarte->delete();
-        header("Location: ".$app->root."/modifierCollection/".$collection_id);
+        header("Location: ".$this->router->pathFor('edit_collection_page', array('id' => $collection_id)));
         exit();
     }
     else{
-        header("Location: ".$app->root."/accueil");
+        header("Location: ".$this->router->pathFor('accueil'));
         exit();
     }
-});
+})->setName('remove_card');
 
 // Lance l'application
 $app->run();

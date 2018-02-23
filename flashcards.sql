@@ -38,18 +38,18 @@ CREATE TABLE `carte` (
 --
 
 INSERT INTO `carte` (`id`, `description`, `url_image`, `collection_id`) VALUES
-(11, 'Ane', 'upload/988dc563-ce19-4d0c-9b93-04486d38577b.jpg', 1),
-(10, 'Canard', 'upload/f8cc2714-ee91-45b3-a2db-2de1d371df07.jpg', 1),
-(9, 'Coq', 'upload/2037d513-e1d0-4e85-a965-19fbbc5b5c4a.jpg', 1),
-(8, 'Lapin', 'upload/a9b6fd38-8f2c-4ca3-96a2-037cf4c147eb.jpg', 1),
-(12, 'Chat', 'upload/86d80375-54a6-4e90-9cf3-67d7355bff4c.jpg', 1),
-(13, 'Cheval', 'upload/eb94f7ae-29ec-4c45-bd2e-8a2fb1f88235.jpg', 1),
-(14, 'Chien', 'upload/f466b3f1-00c0-4c1a-93b6-e6cc2cb60994.jpg', 1),
-(15, 'Cochon', 'upload/41ed6dae-5c97-405c-9855-4ae3d90ce331.jpg', 1),
-(16, 'Grenouille', 'upload/ad650a03-2e9c-447d-8f4f-ba191253a613.jpg', 1),
-(17, 'Poisson Rouge', 'upload/7593d359-9759-4dea-a0fc-76547d7ac545.jpg', 1),
-(18, 'Vache', 'upload/fd2e6626-6e1b-48d3-acc1-fd96aae897d2.jpg', 1),
-(19, 'Oie', 'upload/d7bf912d-5902-4869-a215-65456c84705c.jpg', 1);
+(11, 'Ane', 'uploads/988dc563-ce19-4d0c-9b93-04486d38577b.jpg', 1),
+(10, 'Canard', 'uploads/f8cc2714-ee91-45b3-a2db-2de1d371df07.jpg', 1),
+(9, 'Coq', 'uploads/2037d513-e1d0-4e85-a965-19fbbc5b5c4a.jpg', 1),
+(8, 'Lapin', 'uploads/a9b6fd38-8f2c-4ca3-96a2-037cf4c147eb.jpg', 1),
+(12, 'Chat', 'uploads/86d80375-54a6-4e90-9cf3-67d7355bff4c.jpg', 1),
+(13, 'Cheval', 'uploads/eb94f7ae-29ec-4c45-bd2e-8a2fb1f88235.jpg', 1),
+(14, 'Chien', 'uploads/f466b3f1-00c0-4c1a-93b6-e6cc2cb60994.jpg', 1),
+(15, 'Cochon', 'uploads/41ed6dae-5c97-405c-9855-4ae3d90ce331.jpg', 1),
+(16, 'Grenouille', 'uploads/ad650a03-2e9c-447d-8f4f-ba191253a613.jpg', 1),
+(17, 'Poisson Rouge', 'uploads/7593d359-9759-4dea-a0fc-76547d7ac545.jpg', 1),
+(18, 'Vache', 'uploads/fd2e6626-6e1b-48d3-acc1-fd96aae897d2.jpg', 1),
+(19, 'Oie', 'uploads/d7bf912d-5902-4869-a215-65456c84705c.jpg', 1);
 
 -- --------------------------------------------------------
 

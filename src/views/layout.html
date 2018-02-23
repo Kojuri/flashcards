@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Flashcards</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.css" />
+  <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+  <link rel='stylesheet' href='{{public_url}}/styles/style.css' />
+</head>
+
+<body>
+  <nav class="navbar is-primary">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="{{root}}/accueil">
+          <i class="fa fa-play-circle"></i>
+          <b>Flashcards</b>
+        </a>
+        <span class="navbar-burger burger" data-target="navbarMenu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </div>
+      <div id="navbarMenu" class="navbar-menu ">
+        <div class="navbar-end">
+          <a href="{{ path_for('add_collection_page') }}" class="navbar-item">
+            <i class="fa fa-plus-circle"></i>
+            Créer une collection</a>
+          <a href="{{ path_for('get_collections') }}" class="navbar-item">
+            <i class="fa fa-eye"></i>
+            Consulter les collections
+          </a>
+
+          {% if(mail is not null) %}        
+            <a class="navbar-item">
+              <i class="fa fa-user"></i>
+              {{prenom}} {{nom}}
+            </a>
+              <a href="{{ path_for('deconnexion') }}" class="navbar-item">
+                <i class="fas fa-sign-out-alt"></i>
+                Se déconnecter
+              </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  {% block contenu %} {% block contenuSuite %} {% endblock %} {% endblock %}
+
+  <script>
+    (function () {
+      var burger = document.querySelector('.burger');
+      var menu = document.querySelector('#' + burger.dataset.target);
+      burger.addEventListener('click', function () {
+        burger.classList.toggle('is-active');
+        menu.classList.toggle('is-active');
+      });
+    })();
+  </script>
+
+</body>
+
+</html>
