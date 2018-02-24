@@ -6,7 +6,7 @@
         </div>
     <div class="columns">     
         <div class="column is-12">
-          <form class="fc-modifierCarte" action="{{root}}/editCarte/{{carte.id}}" method="post"  enctype="multipart/form-data">
+          <form class="fc-modifierCarte" action="{{ path_for('edit_card', {id: carte.id}) }}" method="post"  enctype="multipart/form-data">
               {% if(error) %}
               <div class="has-text-danger is-danger">
                  {{error}}
@@ -45,7 +45,7 @@
                   <button class="button is-link">Valider</button>
               </div>
               <div class="control">
-                  <a class="button is-text" href = "{{root}}/modifierCollection/{{carte.collection.id}}">Annuler</a>
+                  <a class="button is-text" href = "{{ path_for('edit_collection_page', {id: carte.collection.id}) }}">Annuler</a>
               </div>
             </div>
           </form>
@@ -53,7 +53,7 @@
     </div>  
   </div>
   <div class="column is-6">
-    <img id="blah" src="{{root}}/{{carte.url_image}}" />
+    <img id="blah" src="{{public_url}}/{{carte.url_image}}" />
   </div>
 </div>
 

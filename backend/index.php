@@ -85,7 +85,7 @@ $app->root = dirname($_SERVER['SCRIPT_NAME'],1);
 // Route affichant le formulaire d'inscription
 $app->get('/inscription[/]', function ($request, $response, $args) {
     return $this->view->render($response, 'inscription.html', $args);
-});
+})->setName('get_register_page');
 
 // Route validant l'inscription
 $app->post('/register[/]', function($request, $response, $args) use ($app){
@@ -125,7 +125,7 @@ $app->post('/register[/]', function($request, $response, $args) use ($app){
             'error' => 'Veuillez remplir tous les champs !'
         ]);
     }
-});
+})->setName('register_user');
 
 // Route affichant le formulaire de connexion
 $app->get('/connexion[/]', function ($request, $response, $args) {

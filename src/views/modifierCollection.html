@@ -6,7 +6,7 @@
         </div>
     <div class="columns">
         <div class="column is-8">
-          <form class="fc-modifierCollection" action="{{root}}/editCollection/{{collection.id}}" method="post">
+          <form class="fc-modifierCollection" action="{{ path_for('edit_collection', {id: collection.id}) }}" method="post">
               {% if(error) %}
               <div class="has-text-danger is-danger">
                  {{error}}
@@ -29,7 +29,7 @@
                   <button class="button is-link">Modifier</button>
               </div>
               <div class="control">
-                  <a class="button is-text" href = "{{root}}/collection/{{collection.id}}">Annuler</a>
+                  <a class="button is-text" href = "{{ path_for('get_collection', {id: collection.id}) }}">Annuler</a>
               </div>
             </div>
           </form>
@@ -45,7 +45,7 @@
                         <i class="fa fa-plus"></i>
                     </span>
                     <span>
-                        <a href = "{{root}}/ajouterCarte/{{collection.id}}">Ajouter une carte</a>
+                        <a href = "{{ path_for('add_card_page', {collection_id: collection.id}) }}">Ajouter une carte</a>
                     </span>
                 </div>
             </div>
@@ -53,13 +53,13 @@
             <div class="panel-block channel-list-item">
                 <span class="panel-icon">
                     <!--<i class="fa fa-tag"></i>-->
-                    <img src="{{root}}/{{carte.url_image}}" />
+                    <img src="{{public_url}}/{{carte.url_image}}" />
                 </span>
-                <a href="{{root}}/modifierCarte/{{carte.id}}">
+                <a href="{{ path_for('edit_card_page', {id: carte.id}) }}">
                     <b>{{carte.description}}</b>
                 </a>             
                 <span class="right-desc">
-                    <a class="panel-icon effacer-carte" href="{{root}}/modifierCarte/{{carte.id}}">
+                    <a class="panel-icon effacer-carte" href="{{ path_for('edit_card_page', {id: carte.id}) }}">
                       <i class="fa fa-edit"></i>
                     </a>
                     <a class="panel-icon effacer-carte" href = "#" onclick="ConfirmSuppression({{carte.id}}); return false;">
@@ -74,11 +74,13 @@
 </div>
 
 <script>
-        function ConfirmSuppression(id) {
-          if (confirm("Voulez-vous vraiment supprimer cette carte ?")) { // Clic sur OK
-            document.location.href ="{{root}}/supprimerCarte/" + id;
-          }
-        } 
-    </script>
+
+    function ConfirmSuppression(id) {
+      if (confirm("Voulez-vous vraiment supprimer cette carte ?")) { // Clic sur OK
+        document.location.href = `{{ path_for('remove_card', {id: '${id}'}) }}`;
+      }
+    }
+
+</script>
 
 {% endblock %}

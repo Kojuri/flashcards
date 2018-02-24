@@ -13,7 +13,7 @@
          </div>
         {% endif %}
         <section class="modal-card-body">
-            <form class="geo-signup" action="register" method="post">
+            <form class="geo-signup" action="{{ path_for('register_user') }}" method="post">
                 <div class="field">
                     <p class="control has-icons-left">
                         <input type="text" placeholder="Nom" class="input" name="nom">
