@@ -19,12 +19,10 @@ Application réalisée dans le cadre du projet tutoré, LP CISIIE
 
 ## Installation
 
-- Ajouter les hosts virtuels `api.flashcards.local - admin.flashcards.local - web.flashcards.local - dbadmin.flashcards.local`
+- Ajouter les hosts virtuels `api.flashcards.local - admin.flashcards.local - web.flashcards.local - dbadmin.flashcards.local - migrate.flashcards.local`
 - Installer les dépendances du projet `$ composer update`
 - Créer les services et networks docker `$ sudo docker-compose up`
 - Démarrer les conteneurs docker créés `$ sudo docker-compose start`
-- Aller sur l'interface Adminer sur le lien `http://dbadmin.flashcards.local:8082`
-- Se connecter avec `host=flashcards, username=root, password:root` et selectionner la base de données `flashcards`
-- Importer le schèma de la base de données ainsi que les données de test (fixtures) en exécutant le fichier `./flashcards.sql`
+- Créer le schèma de la base de données et importer les données de test (fixtures) en exécutant le lien `http://migrate.flashcards.local:10083/migrate.php`
 - Se connecter à l'espace admin sur le lien `http://admin.flashcards.local:10081`
-- La racine des URIs de l'API est `http://api.flashcards.local:10080`
+- Un compte professeur de test est disponible, avec les identifiants `--mail=admin@flashcards.fr --mdp=admin`

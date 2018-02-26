@@ -14,6 +14,7 @@ $capsule->addConnection([
     'password'  => 'root',
     'charset'   => 'utf8',
     'collation' => 'utf8_general_ci',
+    'prefix' => 'fc_'
 ]);
 
 $capsule->setAsGlobal();
