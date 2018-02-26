@@ -8,15 +8,9 @@ use App\models\Professeur;
 use App\services\auth\FlashcardsAuthentification;
 use App\handlers\Handler;
 
-/*
-require '../src/models/Carte.php';
-require '../src/models/Collection.php';
-require 'src/flashcards/auth/FlashcardsAuthentification.php';
-require '../src/handlers/exceptions.php';
-*/
-
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 session_start();
 
@@ -220,21 +214,34 @@ $app->get('/ajouterCollection[/]', function ($request, $response, $args) use($ap
 // Route validant l'ajout d'une collection
 $app->post('/addCollection[/]', function($request, $response, $args) use ($app){
     if(isset($_SESSION['mail'])){
-        $data = $request->getParsedBody();
-        if(!empty($data['libelle']))
-        {
-            $libelle = filter_var($data['libelle'], FILTER_SANITIZE_SPECIAL_CHARS);          
-            
-            $collection = new Collection();
-            $collection->libelle = $libelle;
-            $collection->save();
 
-            header("Location: ".$this->router->pathFor('get_collection', array('id' => $collection->id)));
-            exit();
+        try{
+
+            $prof = Professeur::where('mail', '=', $_SESSION['mail'])->firstOrFail();
+
+            $data = $request->getParsedBody();
+            if(!empty($data['libelle']))
+            {
+                $libelle = filter_var($data['libelle'], FILTER_SANITIZE_SPECIAL_CHARS);          
+                
+                $collection = new Collection();
+                $collection->libelle = $libelle;
+                $collection->professeur_id = $prof->id;
+                $collection->save();
+
+                header("Location: ".$this->router->pathFor('get_collection', array('id' => $collection->id)));
+                exit();
+            }
+            else{
+                return $this->view->render($response, 'ajouterCollection.html', [
+                    'error' => 'Veuillez remplir tous les champs !'
+                ]);
+            }
+
         }
-        else{
+        catch(ModelNotFoundException $ex){
             return $this->view->render($response, 'ajouterCollection.html', [
-                'error' => 'Veuillez remplir tous les champs !'
+                'error' => 'Professeur non reconnu'
             ]);
         }
     }

@@ -80,6 +80,29 @@ services:
     networks:
         - flashcards_network
 
+######################
+############ Migration Service
+######################
+  db.migrate:
+      image: canals/php
+      container_name: migrate.flashcards.local
+      environment:
+          - VHOST_HOSTNAME=migrate.flashcards.local
+          - VHOST_DOCROOT=/var/www/data
+  #       - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
+  #       - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
+      ports:
+          - "10083:80"
+          - "10445:443"
+      volumes :
+          - ./data:/var/www/data
+          - ./src:/var/www/src
+          - ./vendor:/var/www/vendor
+      networks:
+          - flashcards_network
+      links :
+          - mysql:flashcards
+
 #############################
 # mysql + adminer / can be replaced by mariadb
 #############################

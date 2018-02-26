@@ -11,7 +11,12 @@ namespace App\models;
 class Professeur extends \Illuminate\Database\Eloquent\Model {
 
        protected $table      = 'professeur';  
-       protected $primaryKey = 'id';     
-       public    $timestamps = false;   					
+       protected $primaryKey = 'id';
+       protected $fillable = ['nom', 'prenom', 'mail', 'mdp'];
+       public    $timestamps = false;
+
+       public function collections() {
+       		return $this->hasMany('App\models\Collection', 'professeur_id');
+       }
 											
 }
