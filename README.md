@@ -26,7 +26,7 @@ Application réalisée dans le cadre du projet tutoré, LP CISIIE
 - Récupérer l'id du conteneur `web.flashcards.local` avec la commande `$ docker ps`
 - Exécuter le conteneur `web.flashcards.local` en bash avec la commande `$ docker exec -it {id_récupéré} /bin/bash`
 - Aller sur le répértoire `/var/www/web`
-- Changer les droits sur le répértoire `/var/www/web/uploads` avec la commande `$ chmod -R 777 ./uploads/` pour autoriser l'écriture à PHP (Téléchargement d'images)
+- Exécuter la commande `$ chmod -R 777 ./uploads/` pour autoriser PHP à écrire sur le répértoire `/var/www/web/uploads` (Téléchargement d'images)
 - Créer le schèma de la base de données et importer les données de test (fixtures) en exécutant le lien `http://migrate.flashcards.local:10083/migrate.php`
 - Se connecter à l'espace admin sur le lien `http://admin.flashcards.local:10081`
 - Un compte professeur de test est disponible, avec les identifiants `--mail=admin@flashcards.fr --mdp=admin`
