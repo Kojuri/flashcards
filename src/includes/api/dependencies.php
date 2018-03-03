@@ -10,6 +10,10 @@ $container['CollectionController'] = function($c){
 	return new App\controllers\CollectionController($c);
 };
 
+$container['GameController'] = function($c){
+	return new App\controllers\GameController($c);
+};
+
 //Services
 
 $container['json_writer'] = function($c){
