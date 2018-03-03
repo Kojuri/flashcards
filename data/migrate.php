@@ -42,6 +42,8 @@ class Migrator {
                 $table->integer('id', true);
                 $table->string('libelle')->default('');
                 $table->string('image')->default('');
+                $table->integer('min_learning_time')->default(60);
+                $table->integer('max_learning_time')->default(360);
                 //FK
                 $table->integer('professeur_id');
 
@@ -84,7 +86,7 @@ class Migrator {
                 $table->integer('id', true);
                 $table->string('pseudo');
                 $table->boolean('is_finished')->default(false);
-                $table->integer('score');
+                $table->integer('score')->default(0);
                 $table->integer('collection_id');
 
                 $table->timestamp('created_at')->default(Capsule::raw('CURRENT_TIMESTAMP'));

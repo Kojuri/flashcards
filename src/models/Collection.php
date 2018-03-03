@@ -19,4 +19,8 @@ class Collection extends \Illuminate\Database\Eloquent\Model {
     return $this->hasMany( 'App\models\Carte', 'collection_id');
   }
 
+  public function games() {
+  	return $this->hasMany('App\models\Game', 'collection_id');
+  }
+
 }
