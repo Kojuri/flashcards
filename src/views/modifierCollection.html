@@ -6,7 +6,7 @@
         </div>
     <div class="columns">
         <div class="column is-8">
-          <form class="fc-modifierCollection" action="{{ path_for('edit_collection', {id: collection.id}) }}" method="post">
+          <form class="fc-modifierCollection" action="{{ path_for('edit_collection', {id: collection.id}) }}" method="post" enctype="multipart/form-data">
               {% if(error) %}
               <div class="has-text-danger is-danger">
                  {{error}}
@@ -18,6 +18,18 @@
                 <input class="input is-success" type="text" placeholder="Animaux" name="libelle" value="{{collection.libelle}}">
                 <span class="icon is-small is-left">
                   <i class="fas fa-thumbtack"></i>
+                </span>
+                <span class="icon is-small is-right">
+                  <i class="fa fa-check"></i>
+                </span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Image</label>
+              <div class="control has-icons-left has-icons-right">
+                <input class="input is-success" type="file" placeholder="http://mon-image.fr" name="image" id="image">
+                <span class="icon is-small is-left">
+                  <i class="fa fa-image"></i>
                 </span>
                 <span class="icon is-small is-right">
                   <i class="fa fa-check"></i>

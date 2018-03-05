@@ -220,13 +220,59 @@ $app->post('/addCollection[/]', function($request, $response, $args) use ($app){
             $prof = Professeur::where('mail', '=', $_SESSION['mail'])->firstOrFail();
 
             $data = $request->getParsedBody();
-            if(!empty($data['libelle']))
+
+            if(!empty($data['libelle']) && !empty($_FILES['image']) && !empty($_FILES['image']['tmp_name']))
             {
                 $libelle = filter_var($data['libelle'], FILTER_SANITIZE_SPECIAL_CHARS);          
-                
                 $collection = new Collection();
                 $collection->libelle = $libelle;
                 $collection->professeur_id = $prof->id;
+
+                //Collection image processing
+
+                $allowed = array("jpg" => "image/jpg", "jpeg" => "image/jpeg", "gif" => "image/gif", "png" => "image/png");
+                $filename = $_FILES["image"]["name"];
+                $filetype = $_FILES["image"]["type"];
+                $filesize = $_FILES["image"]["size"];
+
+                // Verify file extension
+                $ext = pathinfo($filename, PATHINFO_EXTENSION);
+                if(!array_key_exists($ext, $allowed)) {
+                    return $this->view->render($response, 'ajouterCollection.html', [
+                        'error' => 'Erreur, le type de votre fichier ne correspond pas à une image !'
+                    ]);
+                }
+
+                // Verify file size - 5MB maximum
+                $maxsize = 5 * 1024 * 1024;
+                if($filesize > $maxsize) {
+                    return $this->view->render($response, 'ajouterCollection.html', [
+                        'error' => 'Erreur, la taille de votre image est trop importante. 5MB maximum'
+                    ]);
+                }
+
+                $uuid4 = Uuid::uuid4();
+                $path = $uuid4->toString();
+
+                // Verify MYME type of the file
+                if(in_array($filetype, $allowed)){
+                    // Check whether file exists before uploading it
+                    if(file_exists($this->public_path."/uploads/".$path)){
+                        return $this->view->render($response, 'ajouterCollection.html', [
+                            'error' => 'Erreur lors de l\'upload de votre image, veuillez réessayer ultérieurement.'
+                        ]);
+                    } else{                 
+                        move_uploaded_file($_FILES["image"]["tmp_name"], $this->public_path."/uploads/".$path.".".$ext);
+                    } 
+                } else{
+                    return $this->view->render($response, 'ajouterCollection.html', [
+                        'error' => 'Erreur lors de l\'upload de votre image, veuillez réessayer ultérieurement.'
+                    ]);
+                }
+
+                $collection->image = 'uploads'.DIRECTORY_SEPARATOR.$path.".".$ext;
+
+                //Saving the new collection model
                 $collection->save();
 
                 header("Location: ".$this->router->pathFor('get_collection', array('id' => $collection->id)));
@@ -275,6 +321,71 @@ $app->post('/editCollection/{id}[/]', function($request, $response, $args) use (
             $libelle = filter_var($data['libelle'], FILTER_SANITIZE_SPECIAL_CHARS);
             
             $uneCollection->libelle = $libelle;
+
+            //A variable to store the old filename in case the user attempts to edit the collection image
+
+            $old_file = null;
+
+            //Collection image processing
+
+            if(!empty($_FILES['image']) && !empty($_FILES['image']['tmp_name'])){
+
+                $allowed = array("jpg" => "image/jpg", "jpeg" => "image/jpeg", "gif" => "image/gif", "png" => "image/png");
+                $filename = $_FILES["image"]["name"];
+                $filetype = $_FILES["image"]["type"];
+                $filesize = $_FILES["image"]["size"];
+
+                // Verify file extension
+                $ext = pathinfo($filename, PATHINFO_EXTENSION);
+                if(!array_key_exists($ext, $allowed)) {
+                    return $this->view->render($response, 'modifierCollection.html', [
+                        'error' => 'Erreur, le type de votre fichier ne correspond pas à une image !',
+                        'collection' => $uneCollection
+                    ]);
+                        
+                }
+
+                // Verify file size - 5MB maximum
+                $maxsize = 5 * 1024 * 1024;
+                if($filesize > $maxsize) {
+                    return $this->view->render($response, 'modifierCollection.html', [
+                        'error' => 'Erreur, la taille de votre image est trop importante. 5MB maximum',
+                        'collection' => $uneCollection
+                    ]);
+                }
+
+                $uuid4 = Uuid::uuid4();
+                $path = $uuid4->toString();
+
+                // Verify MYME type of the file
+                if(in_array($filetype, $allowed)){
+                    // Check whether file exists before uploading it
+                    if(file_exists($this->public_path."/uploads/".$path)){
+                        return $this->view->render($response, 'modifierCollection.html', [
+                            'error' => 'Erreur lors de l\'upload de votre image, veuillez réessayer ultérieurement.',
+                            'collection' => $uneCollection
+                        ]);
+                    } else{                 
+                        move_uploaded_file($_FILES["image"]["tmp_name"], $this->public_path."/uploads/".$path.".".$ext);
+                    } 
+                } else{
+                    return $this->view->render($response, 'modifierCollection.html', [
+                        'error' => 'Erreur lors de l\'upload de votre image, veuillez réessayer ultérieurement.',
+                        'collection' => $uneCollection
+                    ]);
+                }
+
+                $old_file = $this->public_path.DIRECTORY_SEPARATOR.$uneCollection->image;
+
+                $uneCollection->image = 'uploads'.DIRECTORY_SEPARATOR.$path.".".$ext;
+
+
+            }
+
+            if(!is_null($old_file) && file_exists($old_file) && is_file($old_file)){
+                unlink($old_file);
+            }
+
             $uneCollection->save();
 
             header("Location: ".$this->router->pathFor('get_collection', array('id' => $uneCollection->id)));
@@ -282,7 +393,8 @@ $app->post('/editCollection/{id}[/]', function($request, $response, $args) use (
         }
         else{
             return $this->view->render($response, 'modifierCollection.html', [
-                'error' => 'Veuillez remplir tous les champs !'
+                'error' => 'Veuillez remplir tous les champs !',
+                'collection' => $uneCollection
             ]);
         }
     }
