@@ -13,13 +13,21 @@
                   </a></span>
               </div> 
             <div class="button is-full is-pulled-right">
-                  <span class="icon">
-                      <i class="fa fa-edit"></i>
-                  </span>
-                  <span><a href = "{{ path_for('edit_collection_page', {id: collection.id}) }}">
-                      Modifier la collection
-                  </a></span>
-              </div>       
+                <span class="icon">
+                    <i class="fa fa-edit"></i>
+                </span>
+                <span><a href = "{{ path_for('edit_collection_page', {id: collection.id}) }}">
+                    Modifier la collection
+                </a></span>
+            </div>
+            <div class="button is-full is-pulled-right">
+                <span class="icon">
+                    <i class="fa fa-edit"></i>
+                </span>
+                <span><a href = "{{ path_for('edit_rules_page', {id: collection.id}) }}">
+                    Modifier les règles
+                </a></span>
+            </div> 
                <div class="button is-full is-pulled-right">
                   <span class="icon">
                       <i class="fa fa-plus"></i>

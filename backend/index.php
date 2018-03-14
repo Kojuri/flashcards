@@ -34,6 +34,12 @@ $capsule->getContainer()->singleton(
 $container['public_url'] = 'http://web.flashcards.local:10085';
 $container['public_path'] = __DIR__.'/../web';
 
+//Flash messages
+
+$container['flash'] = function () {
+    return new \Slim\Flash\Messages();
+};
+
 
 $container['view'] = function ($container) {
     $view = new \Slim\Views\Twig(__DIR__.'/../src/views', [
@@ -55,7 +61,18 @@ $container['view'] = function ($container) {
         $view->getEnvironment()->addGlobal("prenom", $prof->prenom);
     }
 
+    //Adding flash messages to Twig
+    $view->addExtension(new \Knlv\Slim\Views\TwigMessages(
+        $container['flash']
+    ));
+
     return $view;
+};
+
+//Controllers
+
+$container['CollectionController'] = function($c){
+    return new App\controllers\CollectionController($c);
 };
 
 
@@ -616,6 +633,13 @@ $app->get('/supprimerCarte/{id}[/]', function ($request, $response, $args) use($
         exit();
     }
 })->setName('remove_card');
+
+
+//Route affichant le formulaire de paramétrage des règles de la collection
+
+$app->get('/collections/{id: [0-9]+}/rules[/]', 'CollectionController:editRulesPage')->setName('edit_rules_page');
+
+$app->post('/collections/{id: [0-9]+}/rules[/]', 'CollectionController:editRules')->setName('edit_rules');
 
 // Lance l'application
 $app->run();
