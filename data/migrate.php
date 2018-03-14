@@ -42,9 +42,26 @@ class Migrator {
                 $table->integer('id', true);
                 $table->string('libelle')->default('');
                 $table->string('image')->default('');
-                $table->integer('min_learning_time')->default(60);
-                $table->integer('max_learning_time')->default(360);
-                //FK
+
+                /* Paramétrage */
+
+                $table->boolean('min_learning_time_required')->default(false); // Indique si le temps minimal d'apprentissage est activé
+
+                $table->boolean('max_learning_time_required')->default(false); // Indique si le temps maximal d'apprentissage est activé
+
+                $table->integer('min_learning_time')->default(60); // Le temps minimal d'apprentissage si activé (En secondes)
+
+                $table->integer('max_learning_time')->default(360); // Le temps maximal d'apprentissage si activé (En secondes)
+
+                $table->boolean('max_response_time_required')->default(false); // Indique si le temps maximal pour répondre est activé
+
+                $table->integer('max_response_time')->default(60); // Le temps maximal avant de considérer la réponse comme fausse (en secondes)
+
+                $table->integer('nb_attempts_allowed')->default(1); // Le nombre de tentatives autorisées avant de considérer que la réponse est fausse
+
+                $table->integer('display_type')->default(1); // Type d'affichage des cartes pour le player (Nombre de cartes par ligne pour faire en sorte de ne pas avoir une barre de défilement)
+
+                /* FK */
                 $table->integer('professeur_id');
 
                 //Foreign keys declaration
@@ -100,45 +117,27 @@ class Migrator {
             });
         }
 
-        // /**
-        //  * create table palier
-        //  */
-        // if (!Capsule::schema()->hasTable('palier')) {
-        //     Capsule::schema()->create('palier', function($table)
-        //     {
-        //         $table->integer('id', true);
-        //         $table->integer('coef');
-        //         $table->integer('points');
+        /**
+         * create table response
+         */
+        if (!Capsule::schema()->hasTable('response')) {
+            Capsule::schema()->create('response', function($table)
+            {
+                $table->integer('id', true);
+                $table->integer('nb_attempts'); // Nombre de tentatives
+                $table->boolean('is_correct'); // Réponse correcte ou pas
+                $table->integer('response_time'); // Temps de réponse (en secondes)
+                $table->integer('game_id'); // La partie concernée
+                $table->integer('carte_id'); // La carte concernée
 
-        //         //FK
-        //         $table->integer('serie_id');
+                $table->engine = 'InnoDB';
 
-        //         $table->engine = 'InnoDB';
+                //Foreign keys declaration
+                $table->foreign('game_id')->references('id')->on('game')->onDelete('cascade');
 
-        //         //Foreign keys declaration
-        //         $table->foreign('serie_id')->references('id')->on('serie')->onDelete('cascade');
-        //     });
-        // }
-
-        // /**
-        //  * create table temps
-        //  */
-        // if (!Capsule::schema()->hasTable('temps')) {
-        //     Capsule::schema()->create('temps', function($table)
-        //     {
-        //         $table->integer('id', true);
-        //         $table->integer('nb_seconds');
-        //         $table->integer('coef');
-
-        //         //FK
-        //         $table->integer('serie_id');
-
-        //         $table->engine = 'InnoDB';
-
-        //         //Foreign keys declaration
-        //         $table->foreign('serie_id')->references('id')->on('serie')->onDelete('cascade');
-        //     });
-        // }
+                $table->foreign('carte_id')->references('id')->on('carte')->onDelete('cascade');
+            });
+        }
 
     }
 }
@@ -148,7 +147,7 @@ $migrator = new Migrator();
 $migrator->migrate();
 
 
-//Default data
+//Données par défaut
 
 if(Professeur::count() === 0){
 	//Default professeur
@@ -176,6 +175,53 @@ if(Professeur::count() === 0){
 	]);
 }
 
-header('Content-type: application/json');
+?>
 
-echo json_encode(array('message' => 'Le schéma de la base de données a bien été créé'));
+<!DOCTYPE html>
+<html>
+
+    <head>
+    
+        <meta charset="utf-8">
+        <title>Création de la base de données</title>
+        <style type="text/css">
+
+            img
+            {
+                float: left; 
+            }
+
+            #display-success
+            {
+                width: 400px;
+                border: 1px solid #D8D8D8;
+                padding: 10px;
+                border-radius: 5px;
+                font-family: Arial;
+                font-size: 11px;
+                text-transform: uppercase;
+                background-color: rgb(236, 255, 216);
+                color: green;
+                text-align: center;
+                margin-top: 30px;
+            }
+
+            #display-success img
+            {
+                position: relative;
+                bottom: 5px;
+            }
+
+        </style>
+    
+    </head>
+    
+    <body>
+    
+        <div id="display-success">
+            <img src="img/correct.png" alt="Success" /> Le schéma de la base de données a bien été créé.
+        </div>
+
+    </body>
+
+</html>

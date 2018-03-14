@@ -1,0 +1,204 @@
+{% extends "layout.html" %}
+
+{% block custom_assets %}
+  <script type="text/javascript" src="{{public_url}}/js/jquery.js"></script>
+{% endblock %}
+
+{% block contenu %}
+
+<div class="section">
+  <div class="container">
+      <div class="title">Modifier les règles du jeu
+        </div>
+    <div class="columns">
+        <div class="column is-4">
+          <form class="edit_rules_form" action="{{ path_for('edit_rules', {'id': collection.id}) }}" method="post" name="edit_rules_form">
+              {% if (error) %}
+              <div class="has-text-danger is-danger">
+                 {{error}}
+              </div>
+              {% endif %}
+
+              {% for msg in flash('messages') %}
+                <p class="has-text-success is-success">{{ msg }}</p>
+              {% endfor %}
+
+            <div class="field">
+              <label class="label">Activer la durée minimale d'apprentissage</label>
+              <input class="is-success" type="checkbox" placeholder="Animaux" name="min_learning_time_required" id="min_learning_time_required" {{ collection.min_learning_time_required == true ? 'checked':'' }} value="true">
+            </div>
+
+            <div id="min_controls" style="margin-bottom:0.75rem;">
+
+              {% if collection.min_learning_time_required == true %}
+                <div class="field">
+                  <label class="label">Valeurs </label>
+                </div>
+
+                <div class="field">
+                  <label class="label is-small">Heures </label>
+                  <input class="input is-small is-success" type="number" min="0" name="min_hours" value="{{ (collection.min_learning_time / 3600)|round(0, 'floor') }}">
+                </div>
+                
+                <div class="field">
+                  <label class="label is-small">Minutes </label>
+                  <input class="input is-small is-success" type="number" min="0" name="min_minutes" value="{{ ((collection.min_learning_time % 3600) / 60)|round(0, 'floor') }}">
+                </div>
+
+                <div class="field">
+                  <label class="label is-small">Seconds </label>
+                  <input class="input is-small is-success" type="number" min="0" name="min_seconds" value="{{ ((collection.min_learning_time % 3600) % 60)|round(0, 'floor') }}">
+                </div>
+
+              {% endif %}
+
+            </div>
+
+            <div class="field">
+              <label class="label">Activer la durée maximale d'apprentissage</label>
+              <input class="" type="checkbox" placeholder="Animaux" name="max_learning_time_required" id="max_learning_time_required" {{ collection.max_learning_time_required == true ? 'checked':'' }} value="true">
+            </div>
+
+            <div id="max_controls" style="margin-bottom:0.75rem;">
+
+              {% if collection.max_learning_time_required == true %}
+
+                <div class="field">
+                  <label class="label">Valeurs </label>
+                </div>
+
+                <div class="field">
+                  <label class="label is-small">Heures</label>
+                  <input class="input is-small is-success" type="number" min="0" name="max_hours" value="{{ (collection.max_learning_time / 3600)|round(0, 'floor') }}">
+                </div>
+                  
+                <div class="field">
+                  <label class="label is-small">Minutes</label>
+                  <input class="input is-small is-success" type="number" min="0" name="max_minutes" value="{{ ((collection.max_learning_time % 3600) / 60)|round(0, 'floor') }}">
+                </div>
+
+                <div class="field">
+                  <label class="label is-small">Seconds</label>
+                  <input class="input is-small is-success" type="number" min="0" name="max_seconds" value="{{ ((collection.max_learning_time % 3600) % 60)|round(0, 'floor') }}">
+                </div>
+
+              {% endif %}
+
+            </div>
+
+            <div class="field is-grouped">
+              <div class="control">
+                  <button id="valider" class="button is-link">Valider</button>
+              </div>
+              <div class="control">
+                  <a class="button is-text" href = "{{ path_for('get_collections') }}">Annuler</a>
+              </div>
+            </div>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+
+  $(() => {
+
+    var collection = JSON.parse('{{collection|json_encode|raw}}');
+
+    $('#min_learning_time_required').change((e) => {
+      if(e.target.checked === true) {
+        $('#min_controls').append(
+            $('<div>').addClass('field').append(
+            $('<label>').addClass('label').text('Valeurs')
+          )).append(
+              $('<div>').addClass('field')
+              .append(
+                $('<label>').addClass('label is-small').text('Heures')
+              ).append(
+                $('<input>')
+                .attr('type', 'number')
+                .attr('name', 'min_hours')
+                .attr('id', 'min_hours')
+                .addClass('input is-small is-success')
+                .val(Math.floor(collection.min_learning_time / 3600))
+              )
+          ).append(
+              $('<div>').addClass('field')
+              .append(
+                $('<label>').addClass('label is-small').text('Minutes')
+              ).append(
+                $('<input>')
+                .attr('type', 'number')
+                .attr('name', 'min_minutes')
+                .attr('id', 'min_minutes')
+                .addClass('input is-small is-success')
+                .val(Math.floor((collection.min_learning_time % 3600) / 60))
+              ) 
+          ).append(
+              $('<div>').addClass('field')
+              .append(
+                $('<label>').addClass('label is-small').text('Seconds')
+              ).append(
+                $('<input>')
+                .attr('type', 'number')
+                .attr('name', 'min_seconds')
+                .attr('id', 'min_seconds')
+                .addClass('input is-small is-success')
+                .val(Math.floor( ((collection.min_learning_time % 3600) % 60) ))
+              )
+          )
+      }else{
+        $('#min_controls').empty();
+      }
+    });
+
+    $('#max_learning_time_required').change((e) => {
+      if(e.target.checked === true) {
+        $('#max_controls').append(
+            $('<div>').addClass('field').append(
+            $('<label>').addClass('label').text('Valeurs')
+          )).append(
+              $('<div>').addClass('field')
+              .append(
+                $('<label>').addClass('label is-small').text('Heures')
+              ).append(
+                $('<input>')
+                .attr('type', 'number')
+                .attr('name', 'max_hours')
+                .attr('id', 'max_hours')
+                .addClass('input is-small is-success')
+                .val(Math.floor(collection.max_learning_time / 3600))
+              )
+          ).append(
+              $('<div>').addClass('field')
+              .append(
+                $('<label>').addClass('label is-small').text('Minutes')
+              ).append(
+                $('<input>')
+                .attr('type', 'number')
+                .attr('name', 'max_minutes')
+                .attr('id', 'max_minutes')
+                .addClass('input is-small is-success')
+                .val(Math.floor((collection.max_learning_time % 3600) / 60))
+              ) 
+          ).append(
+              $('<div>').addClass('field')
+              .append(
+                $('<label>').addClass('label is-small').text('Seconds')
+              ).append(
+                $('<input>')
+                .attr('type', 'number')
+                .attr('name', 'max_seconds')
+                .attr('id', 'max_seconds')
+                .addClass('input is-small is-success')
+                .val(Math.floor( ((collection.max_learning_time % 3600) % 60) ))
+              )
+          )
+      }else{
+        $('#max_controls').empty();
+      }
+    });
+  })
+
+</script>
+{% endblock %}
