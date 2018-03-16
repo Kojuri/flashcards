@@ -82,15 +82,17 @@ class CollectionController extends BaseController
 
             $request_body = $request->getParsedBody();
 
-            $time_rules = array('min_learning_time' => null, 'max_learning_time' => null);
+            $time_rules = array('min_learning_time' => null, 'max_learning_time' => null, 'max_response_time' => null);
 
-            if(!isset($request_body['min_learning_time_required']) && !isset($request_body['max_learning_time_required'])) {
+            if(!isset($request_body['min_learning_time_required']) 
+                && !isset($request_body['max_learning_time_required']) 
+                && !isset($request_body['max_response_time_required'])) {
 
                 $collection->min_learning_time_required = false;
-                $collection->min_learning_time_required = false;
-                $collection->save();
+                $collection->max_learning_time_required = false;
+                $collection->max_response_time_required = false;
 
-            }else{
+            } else {
 
                 if(isset($request_body['min_learning_time_required']) && (bool)$request_body['min_learning_time_required'] === TRUE) {
                     if(
@@ -162,14 +164,99 @@ class CollectionController extends BaseController
                     }
                 }
 
-                $collection->save();
+                // La durée maximale pour répondre
 
-                $this->get('flash')->addMessage('messages' ,'Hello world');
+                if(isset($request_body['max_response_time_required']) && (bool)$request_body['max_response_time_required'] === TRUE) {
+                    if(
+                        isset($request_body['max_response_hours']) && (int)$request_body['max_response_hours'] >= 0
+                        && isset($request_body['max_response_minutes']) && (int)$request_body['max_response_minutes'] >= 0
+                        && isset($request_body['max_response_seconds']) && (int)$request_body['max_response_seconds'] >= 0
+                    ){
 
-                return $response->withRedirect($this->get('router')->pathFor('edit_rules_page', array('id' => $collection->id)));
+                        $time_rules['max_response_time'] = (int)$request_body['max_response_hours'] * 3600;
+                        $time_rules['max_response_time'] += (int)$request_body['max_response_minutes'] * 60;
+                        $time_rules['max_response_time'] += (int)$request_body['max_response_seconds'];
+
+                    }else{
+                        return $this->get('view')->render($response, 'edit_rules.twig', [
+                            'error' => 'Les valeurs d\'entrée ne sont pas valides',
+                            'collection' => $collection
+                        ]);
+                    }
+                } else {
+                    $collection->max_response_time_required = false;
+                }
+
+                if($time_rules['max_response_time'] != null) {
+                    $collection->max_response_time_required = true;
+                    $collection->max_response_time = $time_rules['max_response_time'];
+                }
+
             }
 
-                
+            // Nombre de tentatives autorisées
+
+            if(isset($request_body['nb_attempts_allowed']) && is_numeric($request_body['nb_attempts_allowed']) && $request_body['nb_attempts_allowed'] > 0) {
+
+                $collection->nb_attempts_allowed = filter_var($request_body['nb_attempts_allowed'], FILTER_SANITIZE_NUMBER_INT);
+
+            }else {
+                return $this->get('view')->render($response, 'edit_rules.twig', [
+                    'error' => 'Les valeurs d\'entrée ne sont pas valides',
+                    'collection' => $collection
+                ]);
+            }
+
+            // Affichage de l'information correct après une mauvaise réponse
+
+            if(isset($request_body['display_correct_answer']) && (bool)$request_body['display_correct_answer'] === TRUE) {
+
+                $collection->display_correct_answer = true;
+
+            }else{
+
+                $collection->display_correct_answer = false;
+
+            }
+
+            // Type d'évaluation
+
+            if(isset($request_body['evaluation_type']) && is_numeric($request_body['evaluation_type']) && in_array((int)$request_body['evaluation_type'], [1, 2])){
+
+                $collection->evaluation_type = (int)$request_body['evaluation_type'];
+
+            }else{
+
+                return $this->get('view')->render($response, 'edit_rules.twig', [
+                    'error' => 'Les valeurs d\'entrée ne sont pas valides',
+                    'collection' => $collection
+                ]);
+
+            }
+
+            // Nombre de possibilités par question
+
+            if(isset($request_body['nb_possible_answers']) && is_numeric($request_body['nb_possible_answers']) && (int)$request_body['nb_possible_answers'] > 1){
+
+                $collection->nb_possible_answers = (int)$request_body['nb_possible_answers'];
+
+            }else{
+
+                return $this->get('view')->render($response, 'edit_rules.twig', [
+                    'error' => 'Les valeurs d\'entrée ne sont pas valides',
+                    'collection' => $collection
+                ]);
+
+            }
+
+
+
+
+            $collection->save();
+
+            $this->get('flash')->addMessage('messages' ,'Les modifications ont bien été enregistrées');
+
+            return $response->withRedirect($this->get('router')->pathFor('edit_rules_page', array('id' => $collection->id)));
 
         }
         catch(ModelNotFoundException $ex) {
