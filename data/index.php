@@ -59,6 +59,12 @@ class Migrator {
 
                 $table->integer('nb_attempts_allowed')->default(1); // Le nombre de tentatives autorisées avant de considérer que la réponse est fausse
 
+                $table->boolean('display_correct_answer')->default(true); // Indique si l'on affiche ou pas la réponse correcte dans le cas d'une réponse fausse.
+
+                $table->integer('evaluation_type')->default(1); // Indique le type d'évaluation (Une image en question et des textes en possibilités (1) / Un texte en question et des images en possibilités (2) )
+
+                $table->integer('nb_possible_answers')->default(10); // Nombre de possibilités par question
+
                 $table->integer('display_type')->default(1); // Type d'affichage des cartes pour le player (Nombre de cartes par ligne pour faire en sorte de ne pas avoir une barre de défilement)
 
                 /* FK */

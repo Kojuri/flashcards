@@ -9,6 +9,6 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 
-RewriteRule .* /migrate.php [QSA,L]
+RewriteRule .* /index.php [QSA,L]
 
 #CGIPassAuth On
