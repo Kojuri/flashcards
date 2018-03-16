@@ -1,0 +1,72 @@
+{% extends "layout.html" %} {% block contenu %}
+
+<div class="section">
+  <div class="container">
+      <div class="title">Liste des parties jouées dans la collection : {{collection.libelle}}
+        </div>
+    <div class="columns is-multiline panel-list">
+            <div class="column is-3 panel-heading">		
+                Pseudo
+            </div>
+			<div class="column is-3 panel-heading">
+				Date de début
+			</div>	
+			<div class="column is-3 panel-heading">
+				Date de fin
+			</div>	
+			<div class="column is-2 panel-heading">
+				Etat
+			</div>	
+			<div class="column is-1 panel-heading">
+				Score
+			</div>
+            {% set somme = 0 %}
+			{% for game in collection.games %}
+			{% set somme = somme + game.score %}
+            <div class="column is-3 panel-block">
+                <strong><a href="{{ path_for('get_game_collection', {collection_id: collection.id, game_id: game.id}) }}">
+                    {{game.pseudo}}
+                </a></strong>             
+            </div>
+			<div class="column is-3 panel-block">
+				{{game.created_at | date('d/m/Y H:i:s')}}
+			</div>
+			<div class="column is-3 panel-block">
+				{% if game.finished_at is not null %}
+					{{game.finished_at | date('d/m/Y H:i:s')}}
+				{% else %}
+					/
+				{% endif %}
+			</div>
+			<div class="column is-2 panel-block">
+				{% if game.is_finished == 1 %}
+					Terminée
+				{% else %}
+					En cours
+				{% endif %}
+			</div>	
+			<div class="column is-1 panel-block has-text-right">	
+				{{game.score}}
+			</div>
+            {% endfor %}
+			<div class="column is-10 panel-heading">
+				<b>Moyennes des scores</b>
+			</div>
+			<div class="column is-2 panel-heading has-text-right">
+				<b>{{ somme/(collection.games | length)}}</b>
+			</div>
+        </div>
+    </div>
+  </div>
+
+<script>
+
+    function ConfirmSuppression(id) {
+      if (confirm("Voulez-vous vraiment supprimer cette carte ?")) { // Clic sur OK
+        document.location.href = `{{ path_for('remove_card', {id: '${id}'}) }}`;
+      }
+    }
+
+</script>
+
+{% endblock %}

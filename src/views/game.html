@@ -1,0 +1,88 @@
+{% extends "layout.html" %} {% block contenu %}
+<div class="section">
+    <div class="container">
+		<div class="title column is-12">Partie n°{{game.id}} - {{collection.libelle}}
+      </div> 
+      <div class="columns is-multiline panel-list">         
+     	<div class="column is-6 panel-heading">
+			Pseudo
+		</div>
+		<div class="column is-6 panel-block">
+			{{game.pseudo}}
+		</div>
+		<div class="column is-6 panel-heading">
+			Date de début
+		</div>
+		<div class="column is-6 panel-block">
+			{{game.created_at | date('d/m/Y H:i:s')}}
+		</div>
+		<div class="column is-6 panel-heading">
+			Date de fin
+		</div>
+		<div class="column is-6 panel-block">
+			{% if game.finished_at is not null %}
+				{{game.finished_at | date('d/m/Y H:i:s')}}
+			{% else %}
+				/
+			{% endif %}
+		</div>
+		<div class="column is-6 panel-heading">
+			Etat
+		</div>
+		<div class="column is-6 panel-block">
+			{% if game.is_finished == 1 %}
+				Terminée
+			{% else %}
+				En cours
+			{% endif %}
+		</div>
+		<div class="column is-6 panel-heading">
+			Score
+		</div>
+		<div class="column is-6 panel-block">
+			{{game.score}}
+		</div>
+      </div>
+      <hr>
+      <div class="columns is-multiline" >
+		<div class="panel panel-heading column is-12 is-marginless is-size-4">
+			Réponses
+		</div>
+        {% for response in game.responses %}
+        <div class="column is-2">
+          <div class="panel">
+            <p class="is-marginless">
+                <a href = "{{public_url}}/{{response.carte.url_image}}" target="_blank">
+                  <img src="{{public_url}}/{{response.carte.url_image}}">
+                </a>
+            </p>
+            <div class="panel-block">
+              <div class="columns">
+                <div class="column">
+                  <div class="panel-block-item">
+                    <i class="fa fa-tag icon is-small"></i>&nbsp;{{response.carte.description}}<br>
+					<i class="fa fa-caret-right icon is-small"></i>&nbsp;{{response.nb_attempts}} essais<br>
+					{% if response.is_correct == 1 %}
+						<i class="fa fa-check icon is-small"></i>&nbsp;Juste
+					{% else %}
+						<i class="fa fa-times icon is-small"></i>&nbsp;Faux
+					{% endif %}
+                    <br><i class="fa fa-hourglass-end icon is-small"></i>&nbsp;{{response.response_time}}s
+                  </div>            
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+<script>
+    function ConfirmSuppression() {
+      if (confirm("Voulez-vous vraiment supprimer cette collection ainsi que toutes ses cartes ?")) { // Clic sur OK
+        document.location.href ="{{ path_for('remove_collection', {id: collection.id}) }}";
+      }
+    } 
+</script>
+{% endblock %}

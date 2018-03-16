@@ -63,6 +63,19 @@
         </div>
         {% endfor %}
       </div>
+<div class="columns is-10 is-gapless is-marginless is-multiline is-centered">
+            <div class="column is-4 is-marginless">
+<div class="button is-full">
+                  <span class="icon">
+                      <i class="fa fa-gamepad"></i>
+                  </span>
+                  <span><a href = "{{ path_for('get_games_collection', {id: collection.id}) }}">
+                      Voir les partie jouées avec cette collection
+                  </a></span>
+              </div>
+</div>
+</div>
+
     </div>
   </div>
 <script>

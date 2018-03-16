@@ -15,4 +15,8 @@ class Game extends \Illuminate\Database\Eloquent\Model {
   protected $fillable = ['pseudo', 'is_finished'];
   public $timestamps = true;
 
+ public function responses(){
+    return $this->hasMany( 'App\models\Response', 'game_id');
+  }
+
 }

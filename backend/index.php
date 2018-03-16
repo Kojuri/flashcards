@@ -75,6 +75,9 @@ $container['CollectionController'] = function($c){
     return new App\controllers\CollectionController($c);
 };
 
+$container['GameController'] = function($c){
+    return new App\controllers\GameController($c);
+};
 
 //Default route
 
@@ -640,6 +643,10 @@ $app->get('/supprimerCarte/{id}[/]', function ($request, $response, $args) use($
 $app->get('/collections/{id: [0-9]+}/rules[/]', 'CollectionController:editRulesPage')->setName('edit_rules_page');
 
 $app->post('/collections/{id: [0-9]+}/rules[/]', 'CollectionController:editRules')->setName('edit_rules');
+
+$app->get('/collection/{id: [0-9]+}/games[/]', 'GameController:getGamesCollection')->setName('get_games_collection');
+
+$app->get('/collection/{collection_id: [0-9]+}/game/{game_id: [0-9]+}[/]', 'GameController:getGameCollection')->setName('get_game_collection');
 
 // Lance l'application
 $app->run();

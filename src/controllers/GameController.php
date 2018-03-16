@@ -76,4 +76,32 @@ class GameController extends BaseController
 
     }
 
+
+ public function getGamesCollection($request, $response, $args) {
+        try {
+            $collection = Collection::findOrFail($args['id']);
+        
+            return $this->get('view')->render($response, 'games.html', array(
+            'collection' => $collection));
+        }
+        catch(ModelNotFoundException $ex) {
+
+        }
+}
+
+ public function getGameCollection($request, $response, $args) {
+        try {
+            $collection = Collection::findOrFail($args['collection_id']);
+        	$game = Game::findOrFail($args['game_id']);
+            return $this->get('view')->render($response, 'game.html', array(
+            'collection' => $collection,
+			'game' => $game
+			));
+        }
+        catch(ModelNotFoundException $ex) {
+
+        }
+}
+
+
 }
