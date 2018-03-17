@@ -638,6 +638,21 @@ $app->get('/supprimerCarte/{id}[/]', function ($request, $response, $args) use($
 })->setName('remove_card');
 
 
+// Route affichant le tableau de gestion du prof
+$app->get('/dashboard[/]', function ($request, $response, $args) use ($app){
+    if(isset($_SESSION['mail'])){
+	$prof = Professeur::select()->where('mail', '=', $_SESSION['mail'])->first();
+	$lesCollections = Collection::select()->where('professeur_id', '=', $prof->id)->get();
+        return $this->view->render($response, 'dashboard.html', array(
+            'collections' => $lesCollections
+            ));
+    }
+    else{
+        header("Location: ".$this->router->pathFor('accueil'));
+        exit();
+    }
+})->setName('dashboard');
+
 //Route affichant le formulaire de paramétrage des règles de la collection
 
 $app->get('/collections/{id: [0-9]+}/rules[/]', 'CollectionController:editRulesPage')->setName('edit_rules_page');
@@ -647,6 +662,10 @@ $app->post('/collections/{id: [0-9]+}/rules[/]', 'CollectionController:editRules
 $app->get('/collection/{id: [0-9]+}/games[/]', 'GameController:getGamesCollection')->setName('get_games_collection');
 
 $app->get('/collection/{collection_id: [0-9]+}/game/{game_id: [0-9]+}[/]', 'GameController:getGameCollection')->setName('get_game_collection');
+
+$app->get('/duplicate/{id: [0-9]+}[/]', 'CollectionController:duplicateCollectionPage')->setName('duplicate_collection_page');
+
+$app->post('/duplicate/{id: [0-9]+}[/]', 'CollectionController:duplicateCollection')->setName('duplicate_collection');
 
 // Lance l'application
 $app->run();

@@ -4,6 +4,9 @@ namespace App\controllers;
 
 use App\models\Collection;
 use App\models\Professeur;
+use App\models\Carte;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 
 use \Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -262,6 +265,122 @@ class CollectionController extends BaseController
         catch(ModelNotFoundException $ex) {
 
         }
+    }
+
+	 public function duplicateCollectionPage($request, $response, $args) {
+    	 if(isset($_SESSION['mail'])){
+		    try {
+		        $collection = Collection::findOrFail($args['id']);
+
+		        return $this->get('view')->render($response, 'duplicateCollection.html', ['collection' => $collection]);
+		    }
+		    catch(ModelNotFoundException $ex) {
+
+		    }
+		}
+		else{
+		    header("Location: ".$this->get('router')->pathFor('accueil'));
+		    exit();
+		}
+		
+    }
+
+	 public function duplicateCollection($request, $response, $args) {
+		if(isset($_SESSION['mail'])){
+		     try {
+		        $oldCollection = Collection::findOrFail($args['id']);
+			
+				$prof = Professeur::where('mail', '=', $_SESSION['mail'])->firstOrFail();
+
+		        $data = $request->getParsedBody();
+
+		        if(!empty($data['libelle']) && !empty($_FILES['image']) && !empty($_FILES['image']['tmp_name']))
+		        {
+		            $libelle = filter_var($data['libelle'], FILTER_SANITIZE_SPECIAL_CHARS);          
+		            $collection = new Collection();
+		            $collection->libelle = $libelle;
+		            $collection->professeur_id = $prof->id;
+
+		            //Collection image processing
+
+		            $allowed = array("jpg" => "image/jpg", "jpeg" => "image/jpeg", "gif" => "image/gif", "png" => "image/png");
+		            $filename = $_FILES["image"]["name"];
+		            $filetype = $_FILES["image"]["type"];
+		            $filesize = $_FILES["image"]["size"];
+
+		            // Verify file extension
+		            $ext = pathinfo($filename, PATHINFO_EXTENSION);
+		            if(!array_key_exists($ext, $allowed)) {
+		                return $this->view->render($response, 'ajouterCollection.html', [
+		                    'error' => 'Erreur, le type de votre fichier ne correspond pas à une image !'
+		                ]);
+		            }
+
+		            // Verify file size - 5MB maximum
+		            $maxsize = 5 * 1024 * 1024;
+		            if($filesize > $maxsize) {
+		                return $this->view->render($response, 'ajouterCollection.html', [
+		                    'error' => 'Erreur, la taille de votre image est trop importante. 5MB maximum'
+		                ]);
+		            }
+
+		            $uuid4 = Uuid::uuid4();
+		            $path = $uuid4->toString();
+
+		            // Verify MYME type of the file
+		            if(in_array($filetype, $allowed)){
+		                // Check whether file exists before uploading it
+		                if(file_exists($this->get('public_path."/uploads/".$path'))){
+		                    return $this->view->render($response, 'ajouterCollection.html', [
+		                        'error' => 'Erreur lors de l\'upload de votre image, veuillez réessayer ultérieurement.'
+		                    ]);
+		                } else{                 
+	 						move_uploaded_file($_FILES["image"]["tmp_name"], $this->get('public_path').DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR."$path.$ext");
+		                } 
+		            } else{
+		                return $this->get('view')->render($response, 'ajouterCollection.html', [
+		                    'error' => 'Erreur lors de l\'upload de votre image, veuillez réessayer ultérieurement.'
+		                ]);
+		            }
+
+		            $collection->image = 'uploads'.DIRECTORY_SEPARATOR.$path.".".$ext;
+
+					//$collection->cartes() = $oldCollection->cartes->get();
+					//$collection->cartes()->saveMany($oldCollection->cartes()->get());
+					//var_dump($collection->id);
+				
+		
+		            //Saving the new collection model
+		            $collection->save();
+
+					$oldCartes = $oldCollection->cartes()->get();
+					foreach($oldCartes as $carte){
+						$nvCarte = new Carte();
+						$nvCarte->description = $carte->description;
+						$nvCarte->url_image = $carte->url_image;
+						$nvCarte->collection_id = $collection->id;
+						$nvCarte->save();
+					}
+
+		            header("Location: ".$this->get('router')->pathFor('get_collection', array('id' => $collection->id)));
+		            exit();
+		        }
+		        else{
+		            return $this->get('view')->render($response, 'duplicateCollection.html', [
+		                'error' => 'Veuillez remplir tous les champs !',
+						'collection' => $oldCollection
+		            ]);
+		        }
+		    }
+		    catch(ModelNotFoundException $ex) {
+
+		    }
+		}
+		else{
+		    header("Location: ".$this->get('router')->pathFor('accueil'));
+		    exit();
+		}
+       
     }
 
 }

@@ -38,7 +38,7 @@
           </a>
 
           {% if(mail is not null) %}        
-            <a class="navbar-item">
+            <a href="{{ path_for('dashboard') }}" class="navbar-item">
               <i class="fa fa-user"></i>
               {{prenom}} {{nom}}
             </a>

@@ -1,0 +1,52 @@
+{% extends "layout.html" %} {% block contenu %}
+
+<div class="section">
+  <div class="container">
+      <div class="title">Dupliquer la collection : {{collection.libelle}}
+        </div>
+    <div class="columns">
+        <div class="column is-8">
+          <form class="fc-ajouterCollection" action="{{ path_for('duplicate_collection', {id: collection.id}) }}" method="post" enctype="multipart/form-data">
+              {% if(error) %}
+              <div class="has-text-danger is-danger">
+                 {{error}}
+                </div>
+                {% endif %}
+            <div class="field">
+              <label class="label">Nouveau libellé </label>
+              <div class="control has-icons-left has-icons-right">
+                <input class="input is-success" type="text" placeholder="{{collection.libelle}}" name="libelle">
+                <span class="icon is-small is-left">
+                  <i class="fas fa-thumbtack"></i>
+                </span>
+                <span class="icon is-small is-right">
+                  <i class="fa fa-check"></i>
+                </span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Nouvelle image</label>
+              <div class="control has-icons-left has-icons-right">
+                <input class="input is-success" type="file" placeholder="http://mon-image.fr" name="image" id="image">
+                <span class="icon is-small is-left">
+                  <i class="fa fa-image"></i>
+                </span>
+                <span class="icon is-small is-right">
+                  <i class="fa fa-check"></i>
+                </span>
+              </div>
+            </div>
+            <div class="field is-grouped">
+              <div class="control">
+                  <button class="button is-link">Valider</button>
+              </div>
+              <div class="control">
+                  <a class="button is-text" href = "{{ path_for('get_collection', {id: collection.id}) }}">Annuler</a>
+              </div>
+            </div>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

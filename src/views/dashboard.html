@@ -1,0 +1,71 @@
+{% extends "layout.html" %} {% block contenu %}
+
+<div class="section">
+  <div class="container">
+      <div class="title">Dashboard
+        </div>
+    <div class="cartes-list column is-12">
+        <div class="panel-list">
+            <div class="panel-heading">
+                Mes collections
+                <div class="button is-small is-pulled-right">
+                    <span class="icon">
+                        <i class="fa fa-plus"></i>
+                    </span>
+                    <span>
+                        <a href = "{{ path_for('add_collection_page', {collection_id: collection.id}) }}">Ajouter une collection</a>
+                    </span>
+                </div>
+            </div>
+            {% for collection in collections %}
+            <div class="panel-block channel-list-item">
+				<div class="column is-5">
+                <span class="panel-icon">
+                    <!--<i class="fa fa-tag"></i>-->
+                    <img src="{{public_url}}/{{collection.image}}" />
+                </span>
+                <a href="{{ path_for('get_collection', {id: collection.id}) }}">
+                    <b>{{collection.libelle}}</b>
+                </a>
+				</div>
+				<div class="column is-2">
+					<i>{{collection.cartes | length}} &nbsp;cartes</i>
+				</div>    
+				<div class="column is-2">
+					<i>{{collection.games | length}} &nbsp;parties</i>
+				</div>           
+                <span class="right-desc">
+					<a class="panel-icon effacer-carte" href="{{ path_for('add_card_page', {collection_id: collection.id}) }}">
+                      <i title="Ajouter une carte à cette collection" class="fa fa-plus-circle"></i>
+                    </a>
+					 <a class="panel-icon effacer-carte" href="{{ path_for('duplicate_collection_page', {id: collection.id}) }}">
+                      <i title="Dupliquer cette collection" class="fa fa-copy"></i>
+                    </a>
+                    <a class="panel-icon effacer-carte" href="{{ path_for('edit_collection_page', {id: collection.id}) }}">
+                      <i title="Modifier cette collection" class="fa fa-edit"></i>
+                    </a>
+					<a class="panel-icon effacer-carte" href="{{ path_for('edit_rules_page', {id: collection.id}) }}">
+                      <i title="Modifier les règles de cette collection" class="fa fa-gavel"></i>
+                    </a>
+                    <a class="panel-icon effacer-carte" href = "#" onclick="ConfirmSuppression({{collection.id}}); return false;">
+                        <i title="Supprimer cette collection" class="fa fa-trash"></i>
+                    </a>
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+    function ConfirmSuppression(id) {
+      if (confirm("Voulez-vous vraiment supprimer cette collection ?")) { // Clic sur OK
+        document.location.href = `{{ path_for('remove_collection', {id: '${id}'}) }}`;
+      }
+    }
+
+</script>
+
+{% endblock %}
