@@ -38,7 +38,7 @@ class CollectionController extends BaseController
             
         }
 
-        return $this->get('json_writer')::json_output($response,201,$result);
+        return $this->get('json_writer')::json_output($response, 201, $result);
     }
 
     public function getCollection ($request, $response, $args) {
