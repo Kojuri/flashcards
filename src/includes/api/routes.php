@@ -10,3 +10,6 @@ $app->get('/collections/{id: [0-9]+}[/]', 'CollectionController:getCollection')-
 
 //Creating a new game session
 $app->post('/games[/]', 'GameController:createGame')->setName('create_game');
+
+//Saving score
+$app->patch('/games/{id: [0-9]+}/score[/]', 'GameController:sendScore')->setName('send_score');
