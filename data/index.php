@@ -177,7 +177,20 @@ if(Professeur::count() === 0){
 		new Carte(['url_image' => 'uploads/ad650a03-2e9c-447d-8f4f-ba191253a613.jpg', 'description' => 'Grenouille']),
 		new Carte(['url_image' => 'uploads/7593d359-9759-4dea-a0fc-76547d7ac545.jpg', 'description' => 'Poisson Rouge']),
 		new Carte(['url_image' => 'uploads/fd2e6626-6e1b-48d3-acc1-fd96aae897d2.jpg', 'description' => 'Vache']),
-		new Carte(['url_image' => 'uploads/d7bf912d-5902-4869-a215-65456c84705c.jpg', 'description' => 'Oie'])
+		new Carte(['url_image' => 'uploads/d7bf912d-5902-4869-a215-65456c84705c.jpg', 'description' => 'Oie']),
+        new Carte(['url_image' => 'uploads/fce3fb35-61de-41da-bb50-139c58770383.jpg', 'description' => 'Aigle']),
+        new Carte(['url_image' => 'uploads/5d66454d-6ef5-4d28-8bb7-929260c0e430.png', 'description' => 'Gazelle']),
+        new Carte(['url_image' => 'uploads/69237ef7-fb95-4c29-a93a-633265ed16e6.jpg', 'description' => 'Singe']),   
+        new Carte(['url_image' => 'uploads/f79cb107-b029-4a5a-b323-0952cf4ba1bb.jpg', 'description' => 'Cobra']),
+        new Carte(['url_image' => 'uploads/cf025c33-8eed-4bc9-9068-9508d735c2e9.jpg', 'description' => 'Crocodile']),
+        new Carte(['url_image' => 'uploads/97cd8f8b-656c-4cfb-8783-f0f4753f4c12.jpg', 'description' => 'Éléphant']),
+        new Carte(['url_image' => 'uploads/4b23dd03-8a4f-46ee-a25a-fbf43507f936.jpg', 'description' => 'Giraffe']),
+        new Carte(['url_image' => 'uploads/b8e3fcd5-5c24-4528-a306-a02b294aefd3.jpg', 'description' => 'Léopard']),
+        new Carte(['url_image' => 'uploads/3441f757-2601-4e92-93dd-b65d11d24d30.jpg', 'description' => 'Mouton']),
+        new Carte(['url_image' => 'uploads/7617d031-abc1-4201-978b-9a32ee824728.jpg', 'description' => 'Ours Brun']),
+        new Carte(['url_image' => 'uploads/42af0bf3-cdc9-406f-8040-b85019304468.jpg', 'description' => 'Ours Polaire']), 
+        new Carte(['url_image' => 'uploads/f7d58067-386b-4681-8159-1b93f54f8916.jpg', 'description' => 'Requin']),
+        new Carte(['url_image' => 'uploads/024b2b38-2050-43b1-885e-c663f6789e78.jpg', 'description' => 'Zèbre'])
 	]);
 }
 
