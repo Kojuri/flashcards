@@ -161,7 +161,7 @@ if(Professeur::count() === 0){
 	$professeur = Professeur::create(['nom' => 'Admin', 'prenom' => 'admin', 'mail' => 'admin@flashcards.fr', 'mdp' => $password]);
 
 	//Default collection
-	$collection = Collection::create(['libelle' => 'Animaux', 'image' => 'uploads/030c896c-a119-44b6-a96f-aabcc15e3a5a.jpg', 'professeur_id' => $professeur->id]);
+	$collection = Collection::create(['libelle' => 'Animaux', 'image' => 'uploads/f466b3f1-00c0-4c1a-93b6-e6cc2cb60994.jpg', 'professeur_id' => $professeur->id]);
 
 	//Default cartes
 
