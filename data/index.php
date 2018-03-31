@@ -65,7 +65,7 @@ class Migrator {
 
                 $table->integer('nb_possible_answers')->default(10); // Nombre de possibilités par question
 
-                $table->integer('display_type')->default(1); // Type d'affichage des cartes pour le player (Nombre de cartes par ligne pour faire en sorte de ne pas avoir une barre de défilement)
+                $table->integer('nb_game_questions')->default(10); // Nmbre de question à poser par jeu, par défaut 10
 
                 /* FK */
                 $table->integer('professeur_id');

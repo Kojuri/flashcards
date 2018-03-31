@@ -53,12 +53,19 @@ class GameController extends BaseController
                 "is_finished" => false];
     		$game = $collection->games()->create($game_data_arr);
             unset($game->collection_id);
+            unset($collection->cartes);
+            // $collection->cartes = $collection->cartes()->get();
 
-            $collection->cartes = $collection->cartes()->get();
-            foreach ($collection->cartes as $key => $carte) {
-                $collection->cartes[$key]->url_image = $this->get('public_url').DIRECTORY_SEPARATOR.$carte->url_image;
+            $cartes = Carte::where('collection_id', '=', $collection->id)->inRandomOrder()->limit($collection->nb_game_questions)->get();
+
+            $random_cartes = array();
+
+            foreach ($cartes as $key => $carte) {
+                $carte->url_image = $this->get('public_url').DIRECTORY_SEPARATOR.$carte->url_image;
+                array_push($random_cartes, $carte);
             }
             $collection->image = $this->get('public_url').DIRECTORY_SEPARATOR.$collection->image;
+            $collection->cartes = $random_cartes;
 
             $game->collection = $collection;
             $game->responses = array();
