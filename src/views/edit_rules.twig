@@ -175,6 +175,14 @@
             <input class="" type="radio" name="evaluation_type" {{ collection.evaluation_type == 2 ? 'checked':'' }} value="2"> Un texte en question et des images en possibilités
           </div>
         </div>
+
+        <!-- Nombre de question par jeu -->
+        <div class="column is-one-third">
+          <div class="field">
+            <label class="label">Nombre de questions à poser</label>
+            <input class="input is-small is-success" type="text" name="nb_game_questions" id="nb_game_questions" value="{{collection.nb_game_questions}}">
+          </div>
+        </div>
       </div>
 
       <div class="columns submit-controls">

@@ -65,7 +65,7 @@ class Migrator {
 
                 $table->integer('nb_possible_answers')->default(10); // Nombre de possibilités par question
 
-                $table->integer('display_type')->default(1); // Type d'affichage des cartes pour le player (Nombre de cartes par ligne pour faire en sorte de ne pas avoir une barre de défilement)
+                $table->integer('nb_game_questions')->default(10); // Nmbre de question à poser par jeu, par défaut 10
 
                 /* FK */
                 $table->integer('professeur_id');
@@ -161,7 +161,7 @@ if(Professeur::count() === 0){
 	$professeur = Professeur::create(['nom' => 'Admin', 'prenom' => 'admin', 'mail' => 'admin@flashcards.fr', 'mdp' => $password]);
 
 	//Default collection
-	$collection = Collection::create(['libelle' => 'Animaux', 'image' => 'uploads/030c896c-a119-44b6-a96f-aabcc15e3a5a.jpg', 'professeur_id' => $professeur->id]);
+	$collection = Collection::create(['libelle' => 'Animaux', 'image' => 'uploads/f466b3f1-00c0-4c1a-93b6-e6cc2cb60994.jpg', 'professeur_id' => $professeur->id]);
 
 	//Default cartes
 

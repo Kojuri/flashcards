@@ -210,6 +210,26 @@ class CollectionController extends BaseController
                 ]);
             }
 
+            // Nombre de question par jeu
+
+            if(isset($request_body['nb_game_questions']) && is_numeric($request_body['nb_game_questions']) && $request_body['nb_game_questions'] > 0) {
+
+                $cartes_count = $collection->cartes->count();
+                if($request_body['nb_game_questions'] > $cartes_count) {
+                    return $this->get('view')->render($response, 'edit_rules.twig', [
+                        'error' => 'Le nombre de questions à poser ne peut pas être supérieur au nombre total des cartes',
+                        'collection' => $collection
+                    ]);
+                }
+                $collection->nb_game_questions = filter_var($request_body['nb_game_questions'], FILTER_SANITIZE_NUMBER_INT);
+
+            }else {
+                return $this->get('view')->render($response, 'edit_rules.twig', [
+                    'error' => 'Les valeurs d\'entrée ne sont pas valides',
+                    'collection' => $collection
+                ]);
+            }
+
             // Affichage de l'information correct après une mauvaise réponse
 
             if(isset($request_body['display_correct_answer']) && (bool)$request_body['display_correct_answer'] === TRUE) {
