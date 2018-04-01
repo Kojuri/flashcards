@@ -1,0 +1,92 @@
+{% extends 'layout.html' %}
+
+{% block custom_assets %}
+
+  <script type="text/javascript" src="{{public_url}}/js/jquery.js"></script>
+  <script type="text/javascript">
+
+  	$(() => {
+			
+		$('#csv-file').change(e => {
+			let full_path = e.target.value;
+			if(full_path != undefined) {
+				$('.file-name').text(full_path.split('\\').pop());
+			}
+		})
+
+	})
+
+  </script>
+
+{% endblock %}
+
+{% block contenu %}
+
+<div class="section">
+  <div class="container">
+
+		<div class="title">Importer les cartes via un fichier .csv</div>
+
+		<form enctype="multipart/form-data" method="post" action="{{ path_for('import_cards', {'id': collection.id}) }}">
+
+			{% if (error) %}
+	        <div class="has-text-danger is-danger">
+	           {{error}}
+	        </div>
+	        {% endif %}
+
+	        {% if (errors) and (errors | length) > 0 %}
+
+	        	<div class="has-text-danger is-danger">
+		           Des erreurs ont été trouvées
+		        </div>
+
+		        {% for error in errors %}
+		        	<p>{{error}}</p>
+		        {% endfor %}
+
+	        
+	        {% elseif (message) %}
+	        	<p class="has-text-success is-success">{{ message }}</p>
+	        {% endif %}
+
+			<div class="columns">
+				<div class="column is-half">
+					
+					<div class="file has-name">
+					  <label class="file-label">
+					    <input class="file-input" id="csv-file" type="file" name="csv">
+					    <span class="file-cta">
+					      <span class="file-icon">
+					        <i class="fas fa-upload"></i>
+					      </span>
+					      <span class="file-label">
+					        Choisir un fichier ...
+					      </span>
+					    </span>
+					    <span class="file-name"></span>
+					  </label>
+					</div>
+
+				</div>
+			</div>
+
+			<div class="columns submit-controls">
+		        <div class="column is-one-third">
+		          <div class="field is-grouped">
+		            <div class="control">
+		                <button id="valider" class="button is-link">Valider</button>
+		            </div>
+		            <div class="control">
+		                <a class="button is-text" href = "{{ path_for('get_collection', {'id': collection.id}) }}">Annuler</a>
+		            </div>
+		          </div>
+		        </div>
+	      	</div>
+
+      </form>
+
+	</div>
+</div>
+
+{% endblock %}

@@ -283,7 +283,7 @@ class CollectionController extends BaseController
 
         }
         catch(ModelNotFoundException $ex) {
-
+            return $response->withRedirect($this->get('router')->pathFor('not_found'));
         }
     }
 
@@ -393,7 +393,7 @@ class CollectionController extends BaseController
 		        }
 		    }
 		    catch(ModelNotFoundException $ex) {
-
+                return $response->withRedirect($this->get('router')->pathFor('not_found'));
 		    }
 		}
 		else{
@@ -401,6 +401,114 @@ class CollectionController extends BaseController
 		    exit();
 		}
        
+    }
+
+    public function importCardsPage($request, $response, $args) {
+
+        try{
+            $collection = Collection::findOrFail($args['id']);
+
+            return $this->get('view')->render($response, 'import_cards.twig', array('collection' => $collection));
+        }
+        catch(ModelNotFoundException $ex) {
+            return $response->withRedirect($this->get('router')->pathFor('not_found'));
+        }
+    }
+
+
+    public function importCards ($request, $response, $args) {
+
+        try{
+            $collection = Collection::findOrFail($args['id']);
+
+            $uploadedFiles = $request->getUploadedFiles();
+
+            if(!$uploaded_file = $uploadedFiles['csv']) {
+                return $this->get('view')->render($response, 'import_cards.twig', [
+                    'error' => 'Aucun fichier',
+                    'collection' => $collection
+                ]);
+            }
+
+            $extension = pathinfo($uploaded_file->getClientFilename(), PATHINFO_EXTENSION);
+
+            if($extension !== 'csv') {
+                return $this->get('view')->render($response, 'import_cards.twig', [
+                    'error' => 'Extension de fichier non valide. Un fichier .csv est requis',
+                    'collection' => $collection
+                ]);
+            }
+
+            $uuid = Uuid::uuid4();
+            $basename = $uuid->toString();
+
+            $filename = $this->get('public_path').DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'csv'.DIRECTORY_SEPARATOR."$basename.$extension";
+            $uploaded_file->moveTo($filename);
+
+            // Extraction des données depuis le fichier .csv
+
+            $handler = fopen($filename, 'r');
+            $data = null;
+            $row = 1;
+            $cartes = [];
+            $image_data = '';
+            $description = '';
+            $errors = [];
+            while (($data = fgetcsv($handler, 1000, ",")) !== FALSE) {
+                if(count($data) != 2)
+                    continue;
+                if($row == 1) {
+                    $row ++;
+                    continue;
+                }
+
+                $description = filter_var($data[0], FILTER_SANITIZE_SPECIAL_CHARS);
+
+                if(empty($description)){
+                    array_push($errors, "Ligne $row: La description n'est pas valide");
+                    continue;
+                }
+
+                try {
+                    $image_data = file_get_contents($data[1]);
+                    if(($image_data = imagecreatefromstring($image_data)) === FALSE) {
+                        array_push($errors, "Ligne $row: L'url choisi ne renvoie pas une image valide");
+                        continue;
+                    }
+                    $uuid = Uuid::uuid4();
+                    $basename = $uuid->toString();
+                    imagepng($image_data, $this->get('public_path').DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR."$basename.png");
+                    imagedestroy($image_data);
+
+                    array_push($cartes, new Carte(['description' => $description, 'url_image' => 'uploads'.DIRECTORY_SEPARATOR."$basename.png"]));
+                }
+                catch(Exception $ex) {
+                    array_push($errors, "Ligne $row: Erreur lors du chargement de l'image");
+                }
+
+                
+                $row ++;
+
+            }
+
+            if(count($errors) == 0) {
+                $collection->cartes()->saveMany($cartes);
+
+                $this->get('flash')->addMessage('messages' ,count($cartes).' cartes ont été ajoutées à la collection');
+                
+                return $response->withRedirect($this->get('router')->pathFor('get_collection', array('id' => $collection->id)));
+            }
+            
+            return $this->get('view')->render($response, 'import_cards.twig', array(
+                'collection' => $collection,
+                'errors' => $errors ));
+
+        }
+
+        catch(ModelNotFoundException $ex) {
+            return $response->withRedirect($this->get('router')->pathFor('not_found'));
+        }
+
     }
 
 }
