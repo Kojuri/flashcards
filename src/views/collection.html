@@ -12,7 +12,7 @@
                       Supprimer la collection
                   </a></span>
               </div> 
-		<div class="button is-full is-pulled-right">
+		          <div class="button is-full is-pulled-right">
                   <span class="icon">
                       <i class="fa fa-copy"></i>
                   </span>
@@ -20,22 +20,22 @@
                       Dupliquer la collection
                   </a></span>
               </div> 
-            <div class="button is-full is-pulled-right">
-                <span class="icon">
-                    <i class="fa fa-edit"></i>
-                </span>
-                <span><a href = "{{ path_for('edit_collection_page', {id: collection.id}) }}">
-                    Modifier la collection
-                </a></span>
-            </div>
-            <div class="button is-full is-pulled-right">
-                <span class="icon">
-                    <i class="fa fa-gavel"></i>
-                </span>
-                <span><a href = "{{ path_for('edit_rules_page', {id: collection.id}) }}">
-                    Modifier les règles
-                </a></span>
-            </div> 
+              <div class="button is-full is-pulled-right">
+                  <span class="icon">
+                      <i class="fa fa-edit"></i>
+                  </span>
+                  <span><a href = "{{ path_for('edit_collection_page', {id: collection.id}) }}">
+                      Modifier la collection
+                  </a></span>
+              </div>
+              <div class="button is-full is-pulled-right">
+                  <span class="icon">
+                      <i class="fa fa-gavel"></i>
+                  </span>
+                  <span><a href = "{{ path_for('edit_rules_page', {id: collection.id}) }}">
+                      Modifier les règles
+                  </a></span>
+              </div> 
                <div class="button is-full is-pulled-right">
                   <span class="icon">
                       <i class="fa fa-plus"></i>
@@ -44,12 +44,29 @@
                       Ajouter une carte
                   </a></span>
               </div>
+
+              <div class="button is-full is-pulled-right">
+                  <span class="icon">
+                      <i class="fa fa-plus"></i>
+                  </span>
+                  <span><a href = "{{ path_for('import_cards_page', {id: collection.id}) }}">
+                      Importer les cartes
+                  </a></span>
+              </div>
              
           </div>        
         </div>
       </div>
       <hr>
+      <div class="columns">
+        <div class="column is-half">
+          {% for msg in flash('messages') %}
+            <p class="has-text-success is-success">{{ msg }}</p>
+          {% endfor %}
+        </div>
+      </div>
       <div class="columns is-multiline" >
+
         {% for carte in collection.cartes %}
         <div class="column is-2">
           <div class="panel">

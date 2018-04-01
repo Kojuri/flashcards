@@ -667,5 +667,22 @@ $app->get('/duplicate/{id: [0-9]+}[/]', 'CollectionController:duplicateCollectio
 
 $app->post('/duplicate/{id: [0-9]+}[/]', 'CollectionController:duplicateCollection')->setName('duplicate_collection');
 
+//Route affichant la page pour importer les cartes via un fichier .csv
+
+$app->get('/collections/{id: [0-9]+}/import_cards', 'CollectionController:importCardsPage')->setName('import_cards_page');
+
+//Route validant l'importation des cartes via un fichier .csv
+
+$app->post('/collections/{id: [0-9]+}/import_cards', 'CollectionController:importCards')->setName('import_cards');
+
+// Route affichant les erreur de type not found
+$app->get('/not_found[/]', function ($request, $response, $args) use ($app){
+
+        return $this->view->render($response, 'not_found.twig', array(
+            'message' => "Ressource introuvable"
+        ));
+
+})->setName('not_found');
+
 // Lance l'application
 $app->run();
