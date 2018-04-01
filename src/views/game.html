@@ -23,7 +23,7 @@
 			{% if game.finished_at is not null %}
 				{{game.finished_at | date('d/m/Y H:i:s')}}
 			{% else %}
-				/
+				N/A
 			{% endif %}
 		</div>
 		<div class="column is-6 panel-heading">
@@ -40,7 +40,7 @@
 			Score
 		</div>
 		<div class="column is-6 panel-block">
-			{{game.score}}
+			{{game.score}} / {{game.responses | length}}
 		</div>
       </div>
       <hr>
