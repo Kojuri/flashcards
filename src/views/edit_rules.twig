@@ -13,7 +13,7 @@
 
 <div class="section">
   <div class="container">
-    <div class="title">Modifier les règles du jeu</div>
+    <div class="title">Modifier les règles du jeu {{collection.libelle}}</div>
     <form class="edit_rules_form" action="{{ path_for('edit_rules', {'id': collection.id}) }}" method="post" name="edit_rules_form">
         {% if (error) %}
         <div class="has-text-danger is-danger">
