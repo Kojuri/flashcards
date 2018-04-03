@@ -160,15 +160,15 @@ class GameController extends BaseController
             Response::insert($responses);
 
             foreach ($responses as $key => $game_response) {
-                foreach ($cartes as $key => $carte) {
+                foreach ($cartes as $carte_key => $carte) {
                     if($carte->id == $responses[$key]['carte_id']) {
                         $carte->url_image = $this->get('public_url').DIRECTORY_SEPARATOR.$carte->url_image;
                         $responses[$key]['carte'] = $carte;
                         break;
                     }
                 }
-                unset($responses[$key]->game_id);
-                unset($responses[$key]->carte_id);
+                unset($responses[$key]['game_id']);
+                unset($responses[$key]['carte_id']);
             }
 
             $game->responses = $responses;
