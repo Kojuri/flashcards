@@ -129,6 +129,7 @@ class GameController extends BaseController
 
             $temp = null;
             $carte = null;
+            $cartes = array();
         
             $final_score = 0;
         
@@ -140,6 +141,7 @@ class GameController extends BaseController
             
             
                  $carte = Carte::findOrFail($response_recieved['carte']['id']);
+                 array_push($cartes, $carte);
             
                  $temp->carte_id = $carte->id;
                  $temp->game_id = $game->id;
@@ -147,20 +149,29 @@ class GameController extends BaseController
                  if($temp->is_correct == true) {
                      $final_score ++;
                  }
-            
-                 //$temp = $temp->toArray();
+
                  $responses[$key] = $temp->toArray();
             }
-        
             $game->score = $final_score;
             $game->is_finished = true;
             $game->finished_at = new \Datetime();
             $game->save();
-
-            // var_dump($responses);
-            // exit();
         
             Response::insert($responses);
+
+            foreach ($responses as $key => $game_response) {
+                foreach ($cartes as $key => $carte) {
+                    if($carte->id == $responses[$key]['carte_id']) {
+                        $carte->url_image = $this->get('public_url').DIRECTORY_SEPARATOR.$carte->url_image;
+                        $responses[$key]['carte'] = $carte;
+                        break;
+                    }
+                }
+                unset($responses[$key]->game_id);
+                unset($responses[$key]->carte_id);
+            }
+
+            $game->responses = $responses;
 
             return $this->get('json_writer')::json_output($response, 200, $game);
 
